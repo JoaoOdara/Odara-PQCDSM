@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"/><title>Diagnóstico Supabase</title>
+<style>body{font-family:monospace;padding:20px;background:#111;color:#F5C100}
+.ok{color:#15803D}.err{color:#CC2929}.info{color:#9CA3AF}
+pre{background:#1a1a1a;padding:12px;border-radius:8px;white-space:pre-wrap;word-break:break-all;font-size:12px}
+button{background:#F5C100;border:none;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer;margin-top:10px;font-size:14px}
+</style></head>
+<body>
+<h2>🔍 Diagnóstico Supabase — Odara</h2>
+<p class="info">Testando conexão com o banco de dados...</p>
+<pre id="log">Aguardando...</pre>
+<button onclick="runTest()">▶ Rodar teste</button>
+
+<script>
+const SB_URL = 'https://khqbimmcibutfrfmkoxr.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtocWJpbW1jaWJ1dGZyZm1rb3hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTY1NjUsImV4cCI6MjA4OTkzMjU2NX0.w3vRAPhiU7Zavgkiv-ldjbHc_UJeGH9ck2tq_YN6MBo';
+
+function log(msg, type='info') {
+  const el = document.getElementById('log');
+  const color = type==='ok'?'#15803D':type==='err'?'#CC2929':'#9CA3AF';
+  el.innerHTML += `<span style="color:${color}">${msg}</span>\n`;
+}
+
+async function runTest() {
+  document.getElementById('log').innerHTML = '';
+  log('1. Origem da página: ' + window.location.origin);
+  log('2. Protocolo: ' + window.location.protocol);
+  log('3. Testando fetch para Supabase...');
+
+  try {
+    const url = `${SB_URL}/rest/v1/pqcdsm?select=count&limit=1`;
+    log('   URL: ' + url);
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    log(`4. Status HTTP: ${response.status} ${response.statusText}`, response.ok ? 'ok' : 'err');
+
+    const headers = {};
+    response.headers.forEach((v,k) => headers[k] = v);
+    log('5. Headers resposta: ' + JSON.stringify(headers, null, 2));
+
+    const text = await response.text();
+    log('6. Corpo da resposta: ' + text, response.ok ? 'ok' : 'err');
+
+    if (response.ok) {
+      log('\n✅ CONEXÃO OK! O Supabase está respondendo.', 'ok');
+    } else {
+      log('\n❌ ERRO na resposta. Veja status e corpo acima.', 'err');
+    }
+  } catch(e) {
+    log(`\n❌ ERRO DE REDE: ${e.name}: ${e.message}`, 'err');
+    log('   Isso geralmente indica bloqueio CORS ou sem internet.', 'err');
+  }
+}
+
+// Roda automaticamente
+runTest();
+</script>
+</body>
+</html>
