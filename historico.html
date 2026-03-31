@@ -1,0 +1,495 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Odara · Histórico</title><link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500;700&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/><style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#0C0C0C;--yellow:#FFB81D;--red:#EE2737;--cream:#FFF8EA;--ink:#1E1E1E;
+  --muted:#6B7280;--border:#E5E5E0;--white:#fff;--green:#15803D;--orange:#C2410C;
+  --blue:#2563EB;--purple:#7C3AED;--teal:#059669;--lg:#F5F5F0;--indigo:#4F46E5;
+  --grad1:linear-gradient(135deg,#0C0C0C 0%,#1E293B 100%);
+  --grad2:linear-gradient(135deg,#FFB81D 0%,#F59E0B 100%);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);min-height:100vh;color:var(--ink)}
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#ccc;border-radius:2px}
+a{color:inherit;text-decoration:none}
+
+/* Header */
+.hdr{background:var(--black);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:200}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-bar{width:5px;height:32px;border-radius:3px;background:var(--yellow)}
+.logo-title{font-family:'Bebas Neue';font-size:22px;color:var(--yellow);letter-spacing:4px}
+.logo-tag{color:#4B5563;font-size:8px;letter-spacing:2px;font-family:'DM Mono';display:block;margin-top:1px}
+.src-badge{font-size:9px;font-family:'DM Mono';padding:2px 8px;border-radius:10px;margin-left:8px}
+.src-live{background:#DCFCE7;color:var(--green)}.src-off{background:#FEF9C3;color:#92400E}.src-err{background:#FEE2E2;color:var(--red)}
+.hdr-right{text-align:right}
+.hdr-date{color:var(--yellow);font-family:'DM Mono';font-size:10px;display:block}
+.hdr-cnt{color:#4B5563;font-family:'DM Mono';font-size:9px;display:block}
+
+/* Nav */
+.nav-bar{background:var(--black);display:flex;gap:2px;padding:0 16px 10px;overflow-x:auto;border-bottom:3px solid var(--yellow)}
+.nav-link{color:#6B7280;font-size:11px;padding:7px 14px;border-radius:8px 8px 0 0;font-family:'DM Sans';white-space:nowrap;transition:all .2s;font-weight:500;display:inline-block}
+.nav-link:hover{color:#9CA3AF}.nav-link.active{background:var(--yellow);color:var(--black);font-weight:700}
+
+/* Content */
+.content{padding:18px;max-width:960px;margin:0 auto}
+.section-lbl{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-family:'DM Mono';margin-bottom:8px;margin-top:6px;display:flex;align-items:center;gap:8px}
+.section-lbl::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* KPI Cards */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:12px}
+.kpi-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:16px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.kpi-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.kpi-card::after{content:'';position:absolute;top:0;right:0;width:60px;height:60px;border-radius:50%;background:currentColor;opacity:.04;transform:translate(20px,-20px)}
+.kpi-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.kpi-lbl{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Mono'}
+.kpi-bdg{font-size:8px;padding:3px 8px;border-radius:12px;color:white;font-weight:900;font-family:'DM Mono'}
+.kpi-val{font-family:'Bebas Neue';font-size:32px;letter-spacing:1px;line-height:1;margin-bottom:3px}
+.kpi-sub{font-size:9px;color:var(--muted);line-height:1.3}
+.kpi-drill{font-size:9px;color:var(--blue);font-family:'DM Mono';margin-top:6px;opacity:0;transition:.2s}
+.kpi-card:hover .kpi-drill{opacity:1}
+.kpi-bar{position:absolute;bottom:0;left:0;right:0;height:3px}
+
+/* Daily Insights */
+.daily-box{background:var(--grad1);border-radius:16px;padding:20px;color:var(--white);margin-bottom:14px}
+.daily-title{font-family:'Bebas Neue';font-size:16px;color:var(--yellow);letter-spacing:2px;margin-bottom:10px}
+.daily-item{font-size:11px;line-height:1.8;color:#D1D5DB;border-left:3px solid;padding-left:10px;margin-bottom:8px}
+.daily-item.green{border-color:var(--green)}.daily-item.red{border-color:var(--red)}.daily-item.yellow{border-color:var(--yellow)}.daily-item.blue{border-color:var(--blue)}
+
+/* SKU Summary Table */
+.sku-summary{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px}
+.sku-tbl{width:100%;border-collapse:collapse;margin-top:8px}
+.sku-tbl th{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;font-family:'DM Mono';letter-spacing:1px;padding:6px 8px;text-align:left;border-bottom:2px solid var(--border)}
+.sku-tbl td{font-size:11px;font-family:'DM Mono';padding:6px 8px;border-bottom:1px solid var(--border)}
+.sku-tbl tr:hover{background:var(--lg)}
+
+/* Toggle */
+.toggle-row{display:inline-flex;gap:4px;background:var(--lg);border-radius:8px;padding:2px}
+.toggle-btn{padding:4px 10px;border:none;border-radius:6px;font-size:10px;font-family:'DM Mono';font-weight:600;cursor:pointer;background:transparent;color:var(--muted);transition:.2s}
+.toggle-btn.active{background:var(--white);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+
+/* Deviations */
+.dev-box{background:var(--white);border:1.5px solid #FCD34D;border-radius:14px;padding:16px;margin-bottom:14px}
+.dev-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:11px}
+.dev-item:last-child{border-bottom:none}
+.dev-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dev-dot.grave{background:var(--red)}.dev-dot.leve{background:var(--orange)}
+
+/* Form */
+.form-section{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px}
+.fsec-hdr{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.fsec-bar{width:4px;height:20px;border-radius:2px;flex-shrink:0}
+.fsec-title{font-weight:800;font-size:12px;font-family:'DM Mono';color:var(--ink)}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.fg4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.fg5{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.fgfull{grid-column:1/-1}
+.fl{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;font-family:'DM Mono';display:block;margin-bottom:3px}
+.fi{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:9px 11px;font-size:13px;font-family:'DM Mono';outline:none;background:var(--cream);transition:border .15s}
+.fi:focus{border-color:var(--yellow)}
+select.fi{font-family:'DM Sans';font-size:12px}
+textarea.fi{resize:vertical;min-height:50px;font-family:'DM Sans';font-size:12px}
+
+/* Event lists */
+.evt-list{display:flex;flex-direction:column;gap:6px}
+.evt-item{display:flex;gap:8px;align-items:center;background:var(--lg);border-radius:8px;padding:7px 10px}
+.evt-cat{font-size:11px;font-family:'DM Mono';flex:1}
+.evt-cnt{font-size:11px;font-family:'DM Mono';font-weight:700;color:var(--blue);width:24px;text-align:center}
+.evt-del{background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px}
+.evt-del:hover{color:var(--red)}
+.add-evt-row{display:flex;gap:8px;margin-top:8px}
+.add-evt-sel{flex:1;border:1.5px dashed var(--border);border-radius:9px;padding:8px 10px;font-size:12px;font-family:'DM Sans';outline:none;background:var(--white);cursor:pointer}
+.add-evt-btn{background:var(--black);color:var(--yellow);border:none;border-radius:9px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Mono';white-space:nowrap}
+
+/* Pill */
+.pill{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);font-size:11px;cursor:pointer;font-family:'DM Mono';font-weight:600;transition:all .15s;background:var(--white)}
+.pill.active{background:var(--black);color:var(--yellow);border-color:var(--black)}
+
+/* Ponto tabs */
+.ponto-tab{display:inline-flex;gap:2px;background:var(--lg);border-radius:10px;padding:3px;margin-bottom:12px}
+.ponto-btn{padding:6px 14px;border:none;border-radius:8px;font-size:11px;font-family:'DM Mono';font-weight:600;cursor:pointer;background:transparent;color:var(--muted);transition:.2s}
+.ponto-btn.active{background:var(--white);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+
+/* Standards */
+.pad-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.pad-item:last-child{border-bottom:none}
+.pad-txt{font-size:11px;flex:1;line-height:1.4}
+.pad-crit{font-size:8px;font-family:'DM Mono';padding:2px 6px;border-radius:8px;font-weight:700;flex-shrink:0}
+.pad-crit.alta{background:#FEE2E2;color:var(--red)}.pad-crit.media{background:#FEF9C3;color:#92400E}
+.pad-status{display:flex;gap:3px;flex-shrink:0}
+.pad-btn{width:28px;height:24px;border:1.5px solid var(--border);border-radius:6px;font-size:9px;cursor:pointer;background:var(--white);transition:.2s;display:flex;align-items:center;justify-content:center}
+.pad-btn.c{background:#DCFCE7;border-color:#86EFAC;color:var(--green)}.pad-btn.dl{background:#FEF9C3;border-color:#FCD34D;color:#92400E}.pad-btn.dg{background:#FEE2E2;border-color:#FCA5A5;color:var(--red)}.pad-btn.na{background:var(--lg);border-color:var(--border);color:var(--muted)}
+
+/* Charts */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.chart-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:14px}
+.chart-title{font-weight:700;font-size:11px;font-family:'DM Mono';color:var(--ink);margin-bottom:10px}
+canvas{max-height:160px}
+
+/* Save */
+.save-btn{width:100%;background:var(--grad2);border:none;border-radius:14px;padding:16px;font-weight:800;font-size:14px;cursor:pointer;color:var(--black);font-family:'DM Sans';letter-spacing:.3px;transition:all .2s;margin-bottom:28px}
+.save-btn:hover{filter:brightness(1.05);transform:translateY(-1px);box-shadow:0 4px 16px rgba(255,184,29,.3)}
+.save-btn:disabled{background:var(--lg);color:var(--muted);cursor:not-allowed;transform:none;box-shadow:none}
+
+/* History */
+.hcard{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;transition:.15s}
+.hcard:hover{background:var(--lg)}.hcard.deleted{opacity:.5;border-style:dashed}
+.mini-g{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.mc{background:var(--lg);border-radius:7px;padding:6px;text-align:center}
+.ml{font-size:9px;color:var(--muted);font-family:'DM Mono';letter-spacing:1px;text-transform:uppercase}
+.mv{font-weight:700;font-size:12px;color:var(--ink);margin-top:1px;font-family:'DM Mono'}
+.hist-actions{display:flex;gap:6px;margin-top:8px}
+.hist-btn{padding:4px 10px;border-radius:6px;border:1px solid var(--border);font-size:10px;font-family:'DM Mono';cursor:pointer;background:var(--white);transition:.2s}
+.hist-btn:hover{background:var(--lg)}.hist-btn.del{color:var(--red);border-color:var(--red)}.hist-btn.del:hover{background:#FEE2E2}
+
+/* Weight module */
+.sg-table{width:100%;border-collapse:collapse;margin-top:10px}
+.sg-table th{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;font-family:'DM Mono';letter-spacing:1px;padding:6px 4px;text-align:center;border-bottom:2px solid var(--border)}
+.sg-table td{font-size:12px;font-family:'DM Mono';padding:5px 4px;text-align:center;border-bottom:1px solid var(--border)}
+.sg-table tr:hover{background:var(--lg)}
+.sg-del{background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;padding:2px 6px;border-radius:4px}
+.sg-del:hover{background:#FEE2E2;color:var(--red)}
+.live-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-top:12px}
+.ls-card{background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:10px;text-align:center}
+.ls-val{font-family:'Bebas Neue';font-size:22px;line-height:1}
+.ls-lbl{font-size:8px;color:var(--muted);font-family:'DM Mono';letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+
+/* Analysis */
+.an-summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.an-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:16px;position:relative;overflow:hidden}
+.an-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.an-card.green::before{background:var(--green)}.an-card.red::before{background:var(--red)}.an-card.orange::before{background:var(--orange)}.an-card.blue::before{background:var(--blue)}.an-card.purple::before{background:var(--purple)}.an-card.yellow::before{background:var(--yellow)}.an-card.teal::before{background:var(--teal)}
+.an-val{font-family:'Bebas Neue';font-size:28px;letter-spacing:1px;line-height:1;margin-bottom:4px}
+.an-lbl{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Mono'}
+.an-sub{font-size:10px;color:var(--muted);margin-top:4px}
+.verdict-box{border-radius:14px;padding:18px;margin-bottom:14px;border:2px solid}
+.verdict-box.approved{background:#F0FDF4;border-color:#86EFAC}.verdict-box.rejected{background:#FEF2F2;border-color:#FCA5A5}.verdict-box.pending{background:#FFFBEB;border-color:#FCD34D}
+.verdict-title{font-family:'Bebas Neue';font-size:22px;letter-spacing:2px;margin-bottom:6px}
+.verdict-detail{font-size:11px;line-height:1.7;font-family:'DM Mono'}
+.insight-box{background:var(--grad1);border-radius:14px;padding:20px;color:var(--white);margin-bottom:14px}
+.insight-title{font-family:'Bebas Neue';font-size:16px;color:var(--yellow);letter-spacing:2px;margin-bottom:10px}
+.insight-item{font-size:11px;line-height:1.8;color:#D1D5DB;border-left:3px solid var(--yellow);padding-left:10px;margin-bottom:8px}
+.fin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.fin-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:16px}
+.fin-title{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Mono';margin-bottom:8px}
+.fin-val{font-family:'Bebas Neue';font-size:24px;line-height:1}
+.fin-sub{font-size:10px;color:var(--muted);margin-top:4px;font-family:'DM Mono'}
+.an-chart{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px}
+.an-chart canvas{max-height:220px}
+.an-chart-title{font-weight:700;font-size:12px;font-family:'DM Mono';color:var(--ink);margin-bottom:12px}
+.wgt-input-block{background:var(--lg);border-radius:10px;padding:12px;margin-bottom:10px}
+.wgt-input-title{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;font-family:'DM Mono';margin-bottom:10px}
+
+/* Pareto */
+.pareto-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.pareto-lbl{font-size:11px;color:var(--ink);width:200px;flex-shrink:0}
+.pareto-bar-track{flex:1;height:18px;background:var(--lg);border-radius:4px;overflow:hidden}
+.pareto-bar-fill{height:100%;border-radius:4px;transition:width .6s}
+.pareto-cnt{font-size:11px;font-family:'DM Mono';font-weight:700;width:32px;text-align:right;flex-shrink:0}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:20px;width:100%;max-width:720px;box-shadow:0 20px 60px rgba(0,0,0,.3);margin:auto}
+.modal-hdr{padding:20px 22px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start}
+.modal-title{font-weight:800;font-size:16px;color:var(--ink)}
+.modal-sub{font-size:11px;color:var(--muted);font-family:'DM Mono';margin-top:2px}
+.modal-close{background:var(--lg);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.modal-tabs{display:flex;gap:4px;padding:12px 22px 0;border-bottom:1px solid var(--border)}
+.mtab{padding:8px 16px;border:none;background:transparent;cursor:pointer;font-family:'DM Mono';font-size:11px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;transition:.2s}
+.mtab.active{color:var(--ink);border-color:var(--yellow)}
+.modal-body{padding:20px 22px;max-height:70vh;overflow-y:auto}
+
+/* Action items */
+.action-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;transition:.15s}
+.action-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.action-status{font-size:8px;font-family:'DM Mono';padding:2px 8px;border-radius:10px;font-weight:700}
+.action-status.aberta{background:#FEF9C3;color:#92400E}.action-status.andamento{background:#DBEAFE;color:var(--blue)}.action-status.concluida{background:#DCFCE7;color:var(--green)}.action-status.atrasada{background:#FEE2E2;color:var(--red)}
+
+/* Toast & Footer */
+.toast{position:fixed;bottom:18px;right:18px;color:white;padding:11px 18px;border-radius:10px;font-weight:700;font-family:'DM Sans';font-size:12px;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:999;transform:translateY(80px);transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.toast.show{transform:translateY(0)}.toast.ok{background:var(--green)}.toast.err{background:var(--red)}.toast.inf{background:var(--blue)}
+.footer{background:var(--black);margin-top:28px;padding:10px 18px;display:flex;justify-content:space-between}
+.footer span{color:#374151;font-size:9px;font-family:'DM Mono';letter-spacing:1px}
+.empty{text-align:center;padding:40px;background:var(--white);border:1px solid var(--border);border-radius:14px}
+
+@media(max-width:600px){.fg,.fg3,.fg4{grid-template-columns:1fr}.fg5{grid-template-columns:repeat(3,1fr)}.kpi-grid{grid-template-columns:repeat(2,1fr)}.mini-g{grid-template-columns:repeat(2,1fr)}.chart-grid,.fin-grid{grid-template-columns:1fr}.an-summary{grid-template-columns:repeat(2,1fr)}}
+
+</style><script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script></head><body>
+<div class="hdr"><div class="logo"><div class="logo-bar"></div><div><span class="logo-title">ODARA</span><span class="logo-tag">HISTÓRICO</span></div></div></div>
+<div class="nav-bar" id="main-nav"></div>
+<div class="content">
+  <div class="form-section" style="padding:14px">
+    <div class="fg" style="align-items:end">
+      <div><label class="fl">Tipo de registro</label>
+        <div class="ponto-tab" style="margin:0">
+          <button class="ponto-btn active" id="ht-btn-res" onclick="setHistTipo('resultados')">📋 Resultados</button>
+          <button class="ponto-btn" id="ht-btn-peso" onclick="setHistTipo('pesagens')">⚖️ Pesagens</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <label style="font-size:10px;color:var(--muted);font-family:'DM Mono';display:flex;align-items:center;gap:4px"><input type="checkbox" id="hist-show-del" onchange="loadHist()"/> Mostrar apagados</label>
+        <button onclick="exportCSV()" style="background:var(--black);color:var(--yellow);border:none;border-radius:8px;padding:7px 14px;font-weight:700;font-size:10px;cursor:pointer;font-family:'DM Mono'">⬇ CSV</button>
+      </div>
+    </div>
+  </div>
+  <div id="hist-meta" style="font-size:10px;color:var(--muted);font-family:'DM Mono';margin:8px 0">—</div>
+  <div id="hist-list"></div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="edit-overlay" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-hdr"><div><div class="modal-title">✏️ Editar Registro</div><div class="modal-sub" id="edit-sub"></div></div><button class="modal-close" onclick="document.getElementById('edit-overlay').classList.remove('open')">×</button></div>
+    <div class="modal-body" id="edit-body"></div>
+  </div>
+</div>
+
+<!-- Edit Pesagem Modal -->
+<div class="modal-overlay" id="edit-peso-overlay" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-hdr"><div><div class="modal-title">✏️ Editar Pesagem</div><div class="modal-sub" id="edit-peso-sub"></div></div><button class="modal-close" onclick="document.getElementById('edit-peso-overlay').classList.remove('open')">×</button></div>
+    <div class="modal-body" id="edit-peso-body"></div>
+  </div>
+</div>
+
+<div class="footer"><span>ODARA · PQCDSM v9 · Histórico</span><span></span></div>
+<div class="toast" id="toast"></div>
+<script>
+// ═══════════════════════════════════════════════════════════
+// ODARA PQCDSM v9 — Shared Module
+// ═══════════════════════════════════════════════════════════
+const SB_URL='https://khqbimmcibutfrfmkoxr.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtocWJpbW1jaWJ1dGZyZm1rb3hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTY1NjUsImV4cCI6MjA4OTkzMjU2NX0.w3vRAPhiU7Zavgkiv-ldjbHc_UJeGH9ck2tq_YN6MBo';
+const SB_H={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
+
+// ── SKUs ──
+const SKUS={L1:[{cod:'PP01001',desc:'ALFAJOR CLASSICO TRADICIONAL 65G CX72',gram:65},{cod:'PP02001',desc:'ALFAJOR CLASSICO BRANCO 65G CX72',gram:65},{cod:'PP05001',desc:'ALFAJOR CLASSICO DARK 65G CX72',gram:65},{cod:'PP08006',desc:'ALFAJOR CLASSICO MIX 65G KIT6',gram:65},{cod:'PP08042',desc:'ODARA MIX BOAS ENERGIAS 670G KIT5',gram:65},{cod:'PP08043',desc:'ODARA MIX BOAS ENERGIAS CX25',gram:65},{cod:'PP09001',desc:'MERCATTO MEIO AMARGO 65G CX72',gram:65},{cod:'PP10001',desc:'MERCATTO BRANCO 65G CX72',gram:65},{cod:'PP11001',desc:'MERCATTO 70% CACAU 65G CX72',gram:65}],L2:[{cod:'PP03001',desc:'MINI ALFAJOR TRADICIONAL 25G CX108',gram:25},{cod:'PP03008',desc:'DUPLO MINI TRADICIONAL 25G CX72',gram:25},{cod:'PP08009',desc:'CLASSICO MIX PASCOA 65G KIT6',gram:65},{cod:'PP08040',desc:'CLASSICO MIX 65G KIT6 CX48',gram:65},{cod:'PP08044',desc:'MINI CLASSICO MIX 25G KIT8 CX128',gram:25},{cod:'PP29001',desc:'ZERO TRADICIONAL 45G CX72',gram:45},{cod:'PP30001',desc:'ZERO BRANCO 45G CX72',gram:45}],L3:[{cod:'PP12001',desc:'DR PEANUT LEITE EM PO 35G CX48',gram:35},{cod:'PP13001',desc:'DR PEANUT BRIGADEIRO 55G CX48',gram:55},{cod:'PP14001',desc:'DR PEANUT CHOC BRANCO 55G CX48',gram:55},{cod:'PP15001',desc:'DR PEANUT AVELA 35G CX48',gram:35},{cod:'PP18001',desc:'CROCANTE ODARA AVELA 45G CX72',gram:45},{cod:'PP18003',desc:'CROCANTE ODARA AVELA 45G 3UN CX24',gram:45},{cod:'PP19001',desc:'CROCANTE ODARA PACOCA 45G CX72',gram:45},{cod:'PP19003',desc:'CROCANTE ODARA PACOCA 45G CX24',gram:45},{cod:'PP20001',desc:'CROCANTE ODARA MILK 45G CX72',gram:45},{cod:'PP20003',desc:'CROCANTE ODARA MILK 45G CX24',gram:45},{cod:'PP21001',desc:'DR PEANUT COOKIES CREAM 35G CX48',gram:40},{cod:'PP22001',desc:'DR PEANUT DDL CHOC LEITE 35G CX48',gram:40},{cod:'PP23001',desc:'DR PEANUT DDL CHOC BRANCO 55G CX48',gram:55},{cod:'PP26001',desc:'CROCANTE ODARA PRESTIGIO 40G CX72',gram:40},{cod:'PP27001',desc:'CROCANTE ODARA GALAK NEGRESCO 40G CX72',gram:40},{cod:'NOVO-1',desc:'ALFAJOR CHAVES CLARO 55G',gram:55},{cod:'NOVO-2',desc:'ALFAJOR CHAVES ESCURO 55G',gram:55}]};
+const ALL_SKUS=Object.values(SKUS).flat();
+
+// ── Checklist (22 items) ──
+const PADROES_ITEMS=[{"item":"Metas do turno estão visíveis e atualizadas","obj":"Garantir direcionamento claro da equipe","crit":"media"},{"item":"Indicadores do dia anterior comentados com a equipe","obj":"Fechar o PDCA diário","crit":"media"},{"item":"Prioridades do dia definidas para a equipe","obj":"Evitar ambiguidade na execução","crit":"alta"},{"item":"Equipe uniformizada, roupa limpa e com EPI correto","obj":"Cumprir padrão visual e de segurança","crit":"alta"},{"item":"Equipe iniciou no horário previsto","obj":"Reforçar disciplina e estabilidade de rotina","crit":"media"},{"item":"Operadores alocados habilitados para o posto","obj":"Evitar variação por falta de treinamento","crit":"alta"},{"item":"Linha liberada limpa e organizada antes do início","obj":"Começar o turno em condição padrão","crit":"alta"},{"item":"Dispositivos, sensores e proteções em condição","obj":"Assegurar operação padrão e segura","crit":"alta"},{"item":"Troca de produto/formato seguiu procedimento padrão","obj":"Reduzir erro de setup","crit":"alta"},{"item":"Primeiro produto do lote validado antes de seguir","obj":"Evitar desvio em massa","crit":"alta"},{"item":"Parâmetros de processo padrão respeitados","obj":"Reduzir variação de processo","crit":"alta"},{"item":"Todos os materiais abertos identificados","obj":"Garantir rastreabilidade e controle","crit":"alta"},{"item":"Sequência FIFO/FEFO respeitada","obj":"Evitar vencimento e desvios","crit":"media"},{"item":"PCCs ou PPROs verificados no prazo","obj":"Atender plano de controle","crit":"alta"},{"item":"Ações para desvio PCC/PPRO executadas conforme padrão","obj":"Garantir resposta padronizada","crit":"alta"},{"item":"Postos organizados sem excesso de itens","obj":"Evitar desordem e variação","crit":"media"},{"item":"Pisos, bancadas e equipamentos limpos durante o turno","obj":"Manter condição básica","crit":"alta"},{"item":"Resíduos em recipientes corretos sem acúmulo","obj":"Preservar higiene e disciplina","crit":"media"},{"item":"Registros obrigatórios do turno completos","obj":"Manter disciplina documental","crit":"alta"},{"item":"Desvios do turno com responsável e prazo definidos","obj":"Fechar ciclo de ação","crit":"alta"},{"item":"Pendências comunicadas ao próximo turno","obj":"Evitar ruptura de informação","crit":"alta"},{"item":"Área entregue limpa e organizada","obj":"Garantir partida padrão do turno seguinte","crit":"alta"}];
+
+// ── Bird levels ──
+const BYRD_LEVELS=["Quase-acidente","Dano material","Lesão leve","Acidente grave"];
+const BYRD_COLORS={"Quase-acidente":"#3B82F6","Dano material":"#F59E0B","Lesão leve":"#F97316","Acidente grave":"#DC2626"};
+
+// ── Costs (defaults, overridden by config) ──
+let CUSTOS={biscoito_kg:15,dl_kg:15,chocolate_kg:25,embalagem_un:0.5};
+let METAS={P:95,Q:3,S:0,M:95,PAD:90};
+
+// ═══ SUPABASE HELPERS ═══
+async function sbQuery(table,params=''){
+  const r=await fetch(SB_URL+'/rest/v1/'+table+'?'+params,{headers:SB_H});
+  if(!r.ok)throw new Error('HTTP '+r.status);return await r.json();
+}
+async function sbInsert(table,data){
+  const r=await fetch(SB_URL+'/rest/v1/'+table,{method:'POST',headers:{...SB_H,'Prefer':'return=minimal'},body:JSON.stringify(data)});
+  if(!r.ok)throw new Error('HTTP '+r.status+': '+(await r.text()));return true;
+}
+async function sbUpdate(table,id,data){
+  const r=await fetch(SB_URL+'/rest/v1/'+table+'?id=eq.'+id,{method:'PATCH',headers:{...SB_H,'Prefer':'return=minimal'},body:JSON.stringify(data)});
+  if(!r.ok)throw new Error('HTTP '+r.status);return true;
+}
+async function sbGetConfig(){
+  try{
+    const rows=await sbQuery('config','select=*');
+    rows.forEach(r=>{
+      if(r.chave==='custos'&&r.valor)Object.assign(CUSTOS,r.valor);
+      if(r.chave==='metas'&&r.valor)Object.assign(METAS,r.valor);
+    });
+    return rows;
+  }catch(e){console.warn('Config load failed:',e);return[];}
+}
+
+// ═══ HELPERS ═══
+const pct=(a,b)=>b>0?+((a/b)*100).toFixed(1):null;
+const avg=(arr,fn)=>{const v=arr.map(fn).filter(x=>x!==null&&!isNaN(x));return v.length?+(v.reduce((a,b)=>a+b,0)/v.length).toFixed(2):null;};
+const sum=(arr,fn)=>{const v=arr.map(fn).filter(x=>x!==null);return v.length?+v.reduce((a,b)=>a+b,0).toFixed(1):null;};
+function kpiColor(p,val,metas){if(val===null)return'#9CA3AF';const v=+val,m=metas||METAS;return({P:v>=m.P?'#15803D':v>=m.P*0.85?'#C2410C':'#CC2929',Q:v<=m.Q?'#15803D':v<=m.Q*2?'#C2410C':'#CC2929',S:v<=m.S?'#15803D':'#CC2929',M:v>=m.M?'#15803D':v>=m.M*0.93?'#C2410C':'#CC2929',PAD:v>=m.PAD?'#15803D':v>=m.PAD*0.8?'#C2410C':'#CC2929'})[p]||'#9CA3AF';}
+
+function norm(r){return{id:r.id,data:r.data,linha:r.linha||'',turno:r.turno||'',supervisor:r.supervisor||'',sku:r.sku||'',skuDesc:r.sku_desc||'',skuGram:+r.sku_gram||0,metaCarr:+r.meta_carr||0,realCarr:+r.real_carr||0,metaUnid:+r.meta_unid||0,realUnid:+r.real_unid||0,retrabalho:+r.retrabalho||0,perdas:+r.perdas||0,perdaBisc:+r.perda_biscoito||0,perdaDos:+r.perda_dosado||0,perdaCob:+r.perda_coberto||0,perdaDlKg:+r.perda_dl_kg||0,perdaBiscoitoKg:+r.perda_biscoito_kg||0,perdaRejeitoDosKg:+r.perda_rejeito_dosado_kg||0,perdaQuebraKg:+r.perda_quebra_bolacha_kg||0,perdaDosadoUn:+r.perda_dosado_un||0,perdaCobertoUn:+r.perda_coberto_un||0,perdaChocolateUn:+r.perda_chocolate_un||0,tipoInput:r.tipo_input||'embalagem',tipoProduto:r.tipo_produto||'',totalColab:+r.total_colab||0,presentes:+r.presentes||0,biscPad:+r.bisc_pad||0,biscMedia:+r.bisc_media||0,biscN:+r.bisc_n||0,biscDp:+r.bisc_dp||0,dlPad:+r.dl_pad||0,dlMedia:+r.dl_media||0,dlN:+r.dl_n||0,dlDp:+r.dl_dp||0,cobPad:+r.cob_pad||0,cobReal:+r.cob_real||0,ncs:Array.isArray(r.ncs)?r.ncs:[],incidentes:Array.isArray(r.incidentes)?r.incidentes:[],padroes:(r.padroes&&typeof r.padroes==='object'&&!Array.isArray(r.padroes))?r.padroes:{},padroesComentarios:(r.padroes_comentarios&&typeof r.padroes_comentarios==='object')?r.padroes_comentarios:{},comentarioP:r.comentario_p||'',comentarioQ:r.comentario_q||'',deletedAt:r.deleted_at||null,deletedBy:r.deleted_by||null,editLog:Array.isArray(r.edit_log)?r.edit_log:[],skusProd:Array.isArray(r.skus_produzidos)?r.skus_produzidos:[]};}
+function totalNCs(e){return(e.ncs||[]).reduce((s,n)=>s+(n.qty||0),0);}
+function totalIncs(e){return(e.incidentes||[]).filter(i=>i.camada!=='nenhum').length;}
+function totalPerdasDosKg(e){return(e.perdaDlKg||0)+(e.perdaBiscoitoKg||0)+(e.perdaRejeitoDosKg||0)+(e.perdaQuebraKg||0)+(e.perdaBisc||0);}
+function totalPerdasEmbUn(e){return(e.perdaDosadoUn||0)+(e.perdaCobertoUn||0)+(e.perdaChocolateUn||0)+(e.perdaCob||0);}
+function totalPerdasKg(e){return totalPerdasDosKg(e)+(e.perdaDos||0)+(e.perdas||0);}
+function perdasRS(e,c){c=c||CUSTOS;return(e.perdaDlKg||0)*c.dl_kg+(e.perdaBiscoitoKg||0)*c.biscoito_kg+(e.perdaRejeitoDosKg||0)*c.dl_kg+(e.perdaQuebraKg||0)*c.biscoito_kg+(e.perdaDosadoUn||0)*c.embalagem_un+(e.perdaCobertoUn||0)*c.embalagem_un+(e.perdaChocolateUn||0)*(c.chocolate_kg/40)+(e.perdaBisc||0)*c.biscoito_kg+(e.perdaDos||0)*c.dl_kg+(e.perdaCob||0)*c.chocolate_kg+(e.perdas||0)*15;}
+function ncPareto(es){const m={};es.forEach(e=>(e.ncs||[]).forEach(n=>{const k=n.mode||n.cat||'Outros';m[k]=(m[k]||0)+(n.qty||0);}));return Object.entries(m).sort((a,b)=>b[1]-a[1]);}
+function incByrd(es){const m={};BYRD_LEVELS.forEach(l=>m[l]=0);es.forEach(e=>(e.incidentes||[]).forEach(i=>{if(i.camada&&i.camada!=='nenhum')m[i.camada]=(m[i.camada]||0)+1;}));return m;}
+function activeEntries(d){return d.filter(e=>!e.deletedAt);}
+function padDeviations(es){const devs=[];es.forEach(e=>{const p=e.padroes||{},pc=e.padroesComentarios||{};Object.keys(p).forEach(k=>{const v=p[k];if(v==='dl'||v==='dg'){const item=PADROES_ITEMS[+k];if(item)devs.push({item:item.item,cat:item.cat||'',status:v,crit:item.crit,comment:pc[k]||''});}});});return devs;}
+
+// ═══ INMETRO (Portaria 248/2008) ═══
+function getT(Qn){let T;if(Qn<=50)T=Qn*0.09;else if(Qn<=100)T=4.5;else if(Qn<=200)T=Qn*0.045;else if(Qn<=300)T=9;else if(Qn<=500)T=Qn*0.03;else if(Qn<=1000)T=15;else if(Qn<=10000)T=Qn*0.015;else if(Qn<=15000)T=150;else T=Qn*0.01;if(Qn<=1000)T=Math.ceil(T*10)/10;else T=Math.ceil(T);return T;}
+function getK(n){const t=[[5,2.059,0],[13,0.847,1],[20,0.640,1],[32,0.485,2],[80,0.295,5]];for(let i=t.length-1;i>=0;i--)if(n>=t[i][0])return{k:t[i][1],c:t[i][2]};return{k:t[0][1],c:t[0][2]};}
+function inmetroEval(w,Qn){const n=w.length;if(n<5)return{status:'pending',msg:'Mín 5 pesagens'};const T=getT(Qn),kc=getK(n),k=kc.k,c=kc.c,mean=w.reduce((a,b)=>a+b,0)/n,sd=Math.sqrt(w.reduce((s,x)=>s+Math.pow(x-mean,2),0)/(n-1)),median=w.slice().sort((a,b)=>a-b)[Math.floor(n/2)],limMedia=Qn-k*sd,limT=Qn-T,defBelow=w.filter(x=>x<limT).length,critA=mean>=limMedia,critB=defBelow<=c;return{status:critA&&critB?'approved':'rejected',n,mean:+mean.toFixed(2),sd:+sd.toFixed(2),median:+median.toFixed(2),Qn,T:+T.toFixed(1),k:+k.toFixed(3),c,limMedia:+limMedia.toFixed(2),limT:+limT.toFixed(1),defBelow,critA,critB,min:+Math.min(...w).toFixed(2),max:+Math.max(...w).toFixed(2),overweight:+((mean-Qn)).toFixed(2)};}
+function normalPDF(x,mu,sd){return(1/(sd*Math.sqrt(2*Math.PI)))*Math.exp(-0.5*Math.pow((x-mu)/sd,2));}
+
+// ═══ UI HELPERS ═══
+function showToast(msg,type='ok'){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.classList.remove('show'),3000);}
+function today(){return new Date().toISOString().slice(0,10);}
+
+// ═══ NAV ═══
+function renderNav(active){
+  const pages=[
+    {id:'dia',icon:'📊',label:'Dia',href:'index.html'},
+    {id:'tendencias',icon:'📈',label:'Tendências',href:'tendencias.html'},
+    {id:'entrada',icon:'📋',label:'Entrada',href:'entrada.html'},
+    {id:'pesagens',icon:'⚖️',label:'Pesagens',href:'pesagens.html'},
+    {id:'analise',icon:'🔬',label:'Análise',href:'analise.html'},
+    {id:'historico',icon:'📅',label:'Histórico',href:'historico.html'},
+    {id:'acoes',icon:'🎯',label:'Ações',href:'acoes.html'},
+    {id:'config',icon:'⚙️',label:'Config',href:'config.html'},
+  ];
+  const nav=document.getElementById('main-nav');
+  if(!nav)return;
+  nav.innerHTML=pages.map(p=>'<a href="'+p.href+'" class="nav-link'+(p.id===active?' active':'')+'">'+p.icon+' '+p.label+'</a>').join('');
+}
+
+</script>
+<script>
+let histTipo='resultados',allEntries=[],allPesagens=[];
+
+function setHistTipo(t){histTipo=t;document.getElementById('ht-btn-res').classList.toggle('active',t==='resultados');document.getElementById('ht-btn-peso').classList.toggle('active',t==='pesagens');loadHist();}
+
+async function loadHist(){
+  const list=document.getElementById('hist-list');
+  list.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);font-family:\'DM Mono\';font-size:12px">⏳ Carregando…</div>';
+  try{
+    if(histTipo==='resultados'){
+      const raw=await sbQuery('pqcdsm','select=*&order=data.desc,created_at.desc&limit=200');
+      allEntries=raw.map(norm);
+      renderResultados();
+    }else{
+      allPesagens=await sbQuery('pesagens','select=*&order=data.desc,created_at.desc&limit=500');
+      renderPesagens();
+    }
+  }catch(e){list.innerHTML='<div class="empty">❌ '+e.message+'</div>';showToast('❌ '+e.message,'err');}
+}
+
+function renderResultados(){
+  const showDel=document.getElementById('hist-show-del').checked;
+  const data=showDel?allEntries:activeEntries(allEntries);
+  document.getElementById('hist-meta').textContent=data.length+' registros de produção';
+  document.getElementById('hist-list').innerHTML=data.map(e=>{
+    const isDel=!!e.deletedAt;
+    const pU=e.metaUnid>0?pct(e.realUnid,e.metaUnid):null;
+    const pc=pU===null?'#9CA3AF':+pU>=95?'#15803D':+pU>=80?'#C2410C':'#CC2929';
+    const dStr=new Date(e.data+'T12:00').toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'});
+    const tL=e.turno==='T1'?'T1':'T2';
+    let h='<div class="hcard'+(isDel?' deleted':'')+'">';
+    if(isDel)h+='<div style="font-size:10px;color:var(--red);font-family:\'DM Mono\';margin-bottom:6px">🗑️ Apagado por '+e.deletedBy+' em '+new Date(e.deletedAt).toLocaleDateString('pt-BR')+'</div>';
+    h+='<div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div style="font-weight:700;font-size:13px">'+dStr+'</div><div style="font-size:10px;color:var(--muted);font-family:\'DM Mono\';margin-top:2px">'+e.linha+' · '+tL+' · '+e.supervisor+'</div><div style="font-size:10px;color:var(--blue);font-family:\'DM Mono\';margin-top:1px">'+e.sku+(e.skuGram?' '+e.skuGram+'g':'')+(e.tipoProduto?' · '+e.tipoProduto:'')+'</div></div>'+(pU!==null?'<span style="background:'+pc+'18;color:'+pc+';font-weight:800;font-size:12px;padding:3px 10px;border-radius:16px;font-family:\'DM Mono\'">'+pU+'%</span>':'')+'</div>';
+    h+='<div class="mini-g">'+[['NCs',totalNCs(e)],['Perdas',totalPerdasKg(e)+'kg'],['Segurança',totalIncs(e)+' ev'],['Presença',e.totalColab>0?pct(e.presentes,e.totalColab)+'%':'–'],['Bisc.',e.biscMedia?e.biscMedia+'g':'–'],['DL',e.dlMedia?e.dlMedia+'g':'–'],['Cob.',e.cobReal?e.cobReal+'%':'–'],['Unid.',e.realUnid||'–']].map(([l,v])=>'<div class="mc"><div class="ml">'+l+'</div><div class="mv">'+v+'</div></div>').join('')+'</div>';
+    if(!isDel)h+='<div class="hist-actions"><button class="hist-btn" onclick="editEntry('+e.id+')">✏️ Editar</button><button class="hist-btn del" onclick="deleteEntry('+e.id+')">🗑️ Apagar</button></div>';
+    if(e.editLog&&e.editLog.length)h+='<div style="margin-top:6px;font-size:9px;color:var(--muted);font-family:\'DM Mono\'">'+e.editLog.map(l=>'✏️ '+l.date+' por '+l.by+': '+l.note).join('<br>')+'</div>';
+    h+='</div>';return h;
+  }).join('')||'<div class="empty">Nenhum registro</div>';
+}
+
+function renderPesagens(){
+  const showDel=document.getElementById('hist-show-del').checked;
+  const visivel=showDel?allPesagens:allPesagens.filter(p=>!p.deleted_at);
+  const ativos=allPesagens.filter(p=>!p.deleted_at);
+  document.getElementById('hist-meta').textContent=ativos.length+' subgrupos ativos'+(showDel?' · '+(allPesagens.length-ativos.length)+' apagados':'');
+  const groups={};
+  visivel.forEach(p=>{
+    const k=p.data+'||'+p.linha+'||'+p.sku+'||'+p.ponto;
+    if(!groups[k])groups[k]={data:p.data,linha:p.linha,sku:p.sku,desc:p.sku_desc||'',gram:p.sku_gram,ponto:p.ponto,tipo:p.tipo_pesagem||'',tipoProd:p.tipo_produto||'',recs:[]};
+    groups[k].recs.push(p);
+  });
+  const gList=Object.values(groups);
+  document.getElementById('hist-list').innerHTML=gList.map(g=>{
+    const activeRecs=g.recs.filter(r=>!r.deleted_at);
+    const n=g.recs.length,nActive=activeRecs.length;
+    const allW=activeRecs.flatMap(r=>[r.p1,r.p2,r.p3,r.p4,r.p5].filter(v=>v!=null));
+    const mean=allW.length?+(allW.reduce((a,b)=>a+b,0)/allW.length).toFixed(2):0;
+    const icon={biscoito:'🍪',combinacao:'🍮',final:'📦'}[g.ponto]||'📦';
+    const dStr=new Date(g.data+'T12:00').toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'});
+    let h='<div class="hcard">';
+    h+='<div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div style="font-weight:700;font-size:13px">'+dStr+'</div><div style="font-size:10px;color:var(--muted);font-family:\'DM Mono\';margin-top:2px">'+g.linha+' · '+icon+' '+g.ponto+(g.tipo?' · '+g.tipo:'')+(g.tipoProd?' · '+g.tipoProd:'')+'</div><div style="font-size:10px;color:var(--blue);font-family:\'DM Mono\';margin-top:1px">'+g.sku+(g.desc?' — '+g.desc.slice(0,30):'')+(g.gram?' · '+g.gram+'g':'')+'</div></div><span style="font-size:11px;font-family:\'DM Mono\';color:var(--ink);font-weight:700">x̄ '+mean+'g</span></div>';
+    h+='<div class="mini-g" style="grid-template-columns:repeat(3,1fr)">'+[['Subgrupos',nActive+(n>nActive?' ('+n+' total)':'')],['Pesagens',allW.length],['Média',mean+'g']].map(([l,v])=>'<div class="mc"><div class="ml">'+l+'</div><div class="mv">'+v+'</div></div>').join('')+'</div>';
+    h+='<details style="margin-top:8px"><summary style="font-size:10px;color:var(--blue);font-family:\'DM Mono\';cursor:pointer">Ver subgrupos</summary><div style="overflow-x:auto;margin-top:6px"><table class="sg-table"><thead><tr><th>SG</th><th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>P5</th><th>X̄</th><th>Supervisor</th><th></th></tr></thead><tbody>';
+    g.recs.forEach(r=>{
+      const isDel=!!r.deleted_at;
+      const ps=[r.p1,r.p2,r.p3,r.p4,r.p5].filter(v=>v!=null);
+      const rm=ps.length?+(ps.reduce((a,b)=>a+b,0)/ps.length).toFixed(2):0;
+      const rowStyle=isDel?'opacity:0.4;text-decoration:line-through':'';
+      h+='<tr style="'+rowStyle+'"><td>'+r.subgrupo+'</td>'+ps.map(v=>'<td>'+v+'</td>').join('')+'<td style="font-weight:700;color:var(--blue)">'+rm+'</td><td style="font-size:10px;color:var(--muted)">'+(r.supervisor||'—')+'</td><td style="white-space:nowrap">';
+      if(isDel){
+        h+='<span style="font-size:8px;color:var(--red);font-family:\'DM Mono\'">🗑 '+(r.deleted_by||'')+'</span>';
+      }else{
+        h+='<button class="hist-btn" style="padding:2px 6px;font-size:9px" onclick="editPesagem('+r.id+')">✏️</button> <button class="hist-btn del" style="padding:2px 6px;font-size:9px" onclick="deletePesagem('+r.id+')">🗑️</button>';
+      }
+      h+='</td></tr>';
+      if(r.edit_log&&r.edit_log.length){h+='<tr style="'+rowStyle+'"><td colspan="9" style="font-size:8px;color:var(--muted);font-family:\'DM Mono\';padding:2px 8px">'+r.edit_log.map(l=>'✏️ '+l.date+' '+l.by+': '+l.note).join(' · ')+'</td></tr>';}
+    });
+    h+='</tbody></table></div></details>';
+    h+='</div>';return h;
+  }).join('')||'<div class="empty">Nenhuma pesagem registrada</div>';
+}
+
+// ═══ EDIT/DELETE RESULTADOS ═══
+async function deleteEntry(id){
+  const name=prompt('Seu nome para auditoria:');if(!name)return;
+  if(!confirm('Confirma apagar? O registro será mantido para rastreabilidade.'))return;
+  try{await sbUpdate('pqcdsm',id,{deleted_at:new Date().toISOString(),deleted_by:name});showToast('🗑️ Apagado','inf');loadHist();}catch(e){showToast('❌ '+e.message,'err');}
+}
+function editEntry(id){
+  const e=allEntries.find(x=>x.id===id);if(!e)return;
+  document.getElementById('edit-sub').textContent=e.data+' · '+e.linha+' · '+e.sku;
+  document.getElementById('edit-body').innerHTML='<div class="fg" style="margin-bottom:12px"><div><label class="fl">Meta unidades</label><input id="ed-meta" class="fi" type="number" value="'+e.metaUnid+'"/></div><div><label class="fl">Real unidades</label><input id="ed-real" class="fi" type="number" value="'+e.realUnid+'"/></div><div><label class="fl">Perda DL (kg)</label><input id="ed-pdl" class="fi" type="number" step="0.1" value="'+(e.perdaDlKg||0)+'"/></div><div><label class="fl">Perda biscoito (kg)</label><input id="ed-pbisc" class="fi" type="number" step="0.1" value="'+(e.perdaBiscoitoKg||0)+'"/></div><div><label class="fl">Rejeito dosado (kg)</label><input id="ed-prej" class="fi" type="number" step="0.1" value="'+(e.perdaRejeitoDosKg||0)+'"/></div><div><label class="fl">Quebra bolacha (kg)</label><input id="ed-pqbr" class="fi" type="number" step="0.1" value="'+(e.perdaQuebraKg||0)+'"/></div><div><label class="fl">Perda dosado (un)</label><input id="ed-pdun" class="fi" type="number" value="'+(e.perdaDosadoUn||0)+'"/></div><div><label class="fl">Perda coberto (un)</label><input id="ed-pcun" class="fi" type="number" value="'+(e.perdaCobertoUn||0)+'"/></div><div><label class="fl">Perda chocolate (un)</label><input id="ed-pchun" class="fi" type="number" value="'+(e.perdaChocolateUn||0)+'"/></div><div><label class="fl">Presentes</label><input id="ed-pres" class="fi" type="number" value="'+e.presentes+'"/></div></div><div class="section-lbl">Controle de Peso</div><div class="fg" style="margin-bottom:12px"><div><label class="fl">Biscoito padrão (g)</label><input id="ed-bpad" class="fi" type="number" step="0.1" value="'+(e.biscPad||0)+'"/></div><div><label class="fl">Biscoito média (g)</label><input id="ed-bmedia" class="fi" type="number" step="0.01" value="'+(e.biscMedia||0)+'"/></div><div><label class="fl">DL padrão (g)</label><input id="ed-dlpad" class="fi" type="number" step="0.1" value="'+(e.dlPad||0)+'"/></div><div><label class="fl">DL média (g)</label><input id="ed-dlmedia" class="fi" type="number" step="0.01" value="'+(e.dlMedia||0)+'"/></div><div><label class="fl">Cobertura padrão (%)</label><input id="ed-cobpad" class="fi" type="number" step="0.1" value="'+(e.cobPad||0)+'"/></div><div><label class="fl">Cobertura real (%)</label><input id="ed-cobreal" class="fi" type="number" step="0.1" value="'+(e.cobReal||0)+'"/></div></div><div class="fgfull" style="margin-bottom:8px"><label class="fl">Seu nome *</label><input id="ed-name" class="fi" type="text"/></div><div class="fgfull" style="margin-bottom:12px"><label class="fl">Nota da alteração</label><input id="ed-note" class="fi" type="text" placeholder="O que mudou"/></div><button class="save-btn" onclick="submitEdit('+id+')">💾 Salvar</button>';
+  document.getElementById('edit-overlay').classList.add('open');
+}
+async function submitEdit(id){
+  const name=document.getElementById('ed-name').value.trim(),note=document.getElementById('ed-note').value.trim();
+  if(!name){showToast('⚠️ Nome','err');return;}
+  const e=allEntries.find(x=>x.id===id);
+  const log=[...(e.editLog||[]),{date:today(),by:name,note:note||'Editado'}];
+  try{await sbUpdate('pqcdsm',id,{meta_unid:+document.getElementById('ed-meta').value||0,real_unid:+document.getElementById('ed-real').value||0,perda_dl_kg:+document.getElementById('ed-pdl').value||0,perda_biscoito_kg:+document.getElementById('ed-pbisc').value||0,perda_rejeito_dosado_kg:+document.getElementById('ed-prej').value||0,perda_quebra_bolacha_kg:+document.getElementById('ed-pqbr').value||0,perda_dosado_un:+document.getElementById('ed-pdun').value||0,perda_coberto_un:+document.getElementById('ed-pcun').value||0,perda_chocolate_un:+document.getElementById('ed-pchun').value||0,presentes:+document.getElementById('ed-pres').value||0,bisc_pad:+document.getElementById('ed-bpad').value||0,bisc_media:+document.getElementById('ed-bmedia').value||0,dl_pad:+document.getElementById('ed-dlpad').value||0,dl_media:+document.getElementById('ed-dlmedia').value||0,cob_pad:+document.getElementById('ed-cobpad').value||0,cob_real:+document.getElementById('ed-cobreal').value||0,edit_log:log});document.getElementById('edit-overlay').classList.remove('open');showToast('✅ Atualizado','ok');loadHist();}catch(e){showToast('❌ '+e.message,'err');}
+}
+
+// ═══ EDIT/DELETE PESAGEM ═══
+function editPesagem(id){
+  const r=allPesagens.find(x=>x.id===id);if(!r)return;
+  const ps=[r.p1,r.p2,r.p3,r.p4,r.p5];
+  document.getElementById('edit-peso-sub').textContent='Subgrupo #'+r.subgrupo+' · '+r.data+' · '+r.linha+' · '+r.sku;
+  let h='<div class="fg5" style="margin-bottom:12px">';
+  for(let i=0;i<5;i++)h+='<div><label class="fl">P'+(i+1)+'</label><input id="ep-p'+(i+1)+'" class="fi" type="number" step="0.01" value="'+(ps[i]||0)+'"/></div>';
+  h+='</div><div class="fg" style="margin-bottom:12px"><div><label class="fl">Supervisor</label><input id="ep-sup" class="fi" type="text" value="'+(r.supervisor||'')+'"/></div><div><label class="fl">Seu nome (auditoria) *</label><input id="ep-name" class="fi" type="text"/></div></div><div class="fgfull" style="margin-bottom:12px"><label class="fl">Nota da alteração</label><input id="ep-note" class="fi" type="text" placeholder="O que mudou e por quê"/></div><button class="save-btn" onclick="submitEditPeso('+id+')">💾 Salvar</button>';
+  document.getElementById('edit-peso-body').innerHTML=h;
+  document.getElementById('edit-peso-overlay').classList.add('open');
+}
+async function submitEditPeso(id){
+  const name=document.getElementById('ep-name').value.trim();
+  if(!name){showToast('⚠️ Informe seu nome','err');return;}
+  const r=allPesagens.find(x=>x.id===id);
+  const log=[...(r.edit_log||[]),{date:today(),by:name,note:document.getElementById('ep-note').value.trim()||'Pesos editados'}];
+  try{await sbUpdate('pesagens',id,{p1:+document.getElementById('ep-p1').value||0,p2:+document.getElementById('ep-p2').value||0,p3:+document.getElementById('ep-p3').value||0,p4:+document.getElementById('ep-p4').value||0,p5:+document.getElementById('ep-p5').value||0,supervisor:document.getElementById('ep-sup').value||null,edit_log:log});document.getElementById('edit-peso-overlay').classList.remove('open');showToast('✅ Pesagem atualizada','ok');loadHist();}catch(e){showToast('❌ '+e.message,'err');}
+}
+async function deletePesagem(id){
+  const name=prompt('Seu nome para registro de auditoria:');if(!name)return;
+  if(!confirm('Confirma apagar este subgrupo? Ele será mantido para rastreabilidade mas desconsiderado dos cálculos.'))return;
+  try{await sbUpdate('pesagens',id,{deleted_at:new Date().toISOString(),deleted_by:name});showToast('🗑️ Subgrupo apagado','inf');loadHist();}catch(e){showToast('❌ '+e.message,'err');}
+}
+
+// ═══ EXPORT CSV ═══
+function exportCSV(){
+  if(histTipo==='resultados'){
+    const cols=['data','linha','turno','supervisor','sku','skuDesc','metaUnid','realUnid','perdaDlKg','perdaBiscoitoKg','perdaRejeitoDosKg','perdaQuebraKg','perdaDosadoUn','perdaCobertoUn','perdaChocolateUn','totalColab','presentes'];
+    const csv='\uFEFF'+cols.join(';')+';NCs;Eventos\n'+activeEntries(allEntries).map(e=>cols.map(c=>'"'+(e[c]??'')+'"').join(';')+';'+totalNCs(e)+';'+totalIncs(e)).join('\n');
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));a.download='historico_resultados_'+today()+'.csv';a.click();
+  }else{
+    const hdr='Data;Linha;SKU;Qn;Ponto;Tipo;SG;P1;P2;P3;P4;P5;Supervisor';
+    const rows=allPesagens.map(r=>[r.data,r.linha,r.sku,r.sku_gram,r.ponto,r.tipo_pesagem,r.subgrupo,r.p1,r.p2,r.p3,r.p4,r.p5,r.supervisor||''].join(';'));
+    const csv='\uFEFF'+hdr+'\n'+rows.join('\n');
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));a.download='historico_pesagens_'+today()+'.csv';a.click();
+  }
+  showToast('⬇ CSV exportado','ok');
+}
+
+// Init
+renderNav('historico');loadHist();
+</script>
+</body>
+</html>
