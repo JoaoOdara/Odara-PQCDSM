@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Odara · Entrada de Dados</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500;700&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="shared.css"/>
+</head>
+<body>
+<div class="hdr"><div class="logo"><div class="logo-bar"></div><div><span class="logo-title">ODARA</span><span class="logo-tag">ENTRADA DE DADOS</span></div></div></div>
+<div class="nav-bar" id="main-nav"></div>
+<div class="content">
+  <div id="form-saved" style="display:none;background:#DCFCE7;border:1.5px solid #86EFAC;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-weight:700;color:var(--green);font-size:13px">✅ Registro salvo!</div>
+  <div id="form-err" style="display:none;background:#FEE2E2;border:1.5px solid #FCA5A5;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-weight:700;color:var(--red);font-size:12px"></div>
+
+  <!-- Identificação -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:var(--yellow)"></div><span class="fsec-title">IDENTIFICAÇÃO</span></div>
+    <div class="fg">
+      <div class="fgfull"><label class="fl">Supervisor *</label><input id="f-sup" class="fi" type="text" placeholder="Nome completo"/></div>
+      <div><label class="fl">Data</label><input id="f-data" class="fi" type="date"/></div>
+      <div><label class="fl">Turno</label><select id="f-turno" class="fi"><option value="T1">T1 — 07:00 às 16:48</option><option value="T2">T2 — 16:00 às 01:48</option></select></div>
+      <div class="fgfull"><label class="fl">Linha</label>
+        <select id="f-linha" class="fi" onchange="onLinhaChange()"><option value="L1">Linha 1</option><option value="L2">Linha 2</option><option value="L3">Linha 3</option></select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Produção: Dosagem ou Embalagem -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:var(--blue)"></div><span class="fsec-title">P — PRODUÇÃO</span></div>
+    <div class="ponto-tab" style="width:100%;display:flex;margin-bottom:12px">
+      <button class="ponto-btn active" style="flex:1;text-align:center" onclick="setTipoInput('dosagem',this)">🍮 Dosagem</button>
+      <button class="ponto-btn" style="flex:1;text-align:center" onclick="setTipoInput('embalagem',this)">📦 Embalagem</button>
+    </div>
+    <!-- Dosagem -->
+    <div id="inp-dosagem">
+      <div class="fg" style="margin-bottom:8px">
+        <div><label class="fl">Tipo de produto</label>
+          <select id="f-tipo-prod" class="fi"><option value="classico">Clássico</option><option value="mini">Mini</option><option value="zero">Zero</option><option value="crocante">Crocante</option></select>
+        </div>
+        <div><label class="fl">Planejado (unidades)</label><input id="f-meta-dos" class="fi" type="number" placeholder="0"/></div>
+        <div><label class="fl">Executado (unidades)</label><input id="f-real-dos" class="fi" type="number" placeholder="0"/></div>
+      </div>
+    </div>
+    <!-- Embalagem -->
+    <div id="inp-embalagem" style="display:none">
+      <div class="fg" style="margin-bottom:8px">
+        <div class="fgfull"><label class="fl">SKU</label><select id="f-sku" class="fi"></select></div>
+        <div><label class="fl">Planejado (unidades)</label><input id="f-meta-unid" class="fi" type="number" placeholder="0"/></div>
+        <div><label class="fl">Executado (unidades)</label><input id="f-real-unid" class="fi" type="number" placeholder="0"/></div>
+      </div>
+    </div>
+    <button class="add-evt-btn" style="width:100%;padding:10px;text-align:center;border-radius:10px;font-size:12px;margin-bottom:8px" onclick="addSku()">+ Adicionar SKU/Produto ao registro</button>
+    <div id="sku-list" class="evt-list"></div>
+    <div class="fgfull" style="margin-top:10px"><label class="fl">Comentário sobre produção</label><textarea id="f-com-p" class="fi" placeholder="Observações…"></textarea></div>
+  </div>
+
+  <!-- Perdas -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:#DC2626"></div><span class="fsec-title">C — PERDAS</span></div>
+    <div class="fg" style="gap:16px">
+      <div>
+        <div class="wgt-input-title">Dosagem (kg)</div>
+        <div><label class="fl">Perda doce de leite</label><input id="f-perda-dl" class="fi" type="number" step="0.1" placeholder="0"/></div>
+        <div><label class="fl">Perda biscoito</label><input id="f-perda-bisc" class="fi" type="number" step="0.1" placeholder="0"/></div>
+        <div><label class="fl">Rejeito dosado</label><input id="f-perda-rej" class="fi" type="number" step="0.1" placeholder="0"/></div>
+        <div><label class="fl">Quebra de bolacha</label><input id="f-perda-qbr" class="fi" type="number" step="0.1" placeholder="0"/></div>
+      </div>
+      <div>
+        <div class="wgt-input-title">Cobertura/Embalagem (un)</div>
+        <div><label class="fl">Perda dosado</label><input id="f-perda-dos-un" class="fi" type="number" placeholder="0"/></div>
+        <div><label class="fl">Perda coberto</label><input id="f-perda-cob-un" class="fi" type="number" placeholder="0"/></div>
+        <div><label class="fl">Perda de chocolate</label><input id="f-perda-cho-un" class="fi" type="number" placeholder="0"/></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Qualidade -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:#D97706"></div><span class="fsec-title">Q — QUALIDADE</span></div>
+    <div id="nc-list" class="evt-list"></div>
+    <div class="add-evt-row">
+      <select id="nc-cat-sel" class="add-evt-sel">
+        <option value="">Selecione o modo de falha…</option>
+        <optgroup label="📋 Falha de execução de padrão"><option value="Falha de execução||Parâmetros de processo fora do padrão">Parâmetros de processo fora do padrão</option><option value="Falha de execução||Liberação de linha não realizada">Liberação de linha não realizada</option><option value="Falha de execução||Inspeção em processo não realizada">Inspeção em processo não realizada</option><option value="Falha de execução||Produto seguiu sem aprovação">Produto seguiu sem aprovação</option><option value="Falha de execução||Segregação inadequada">Segregação inadequada</option><option value="Falha de execução||FIFO/FEFO não seguido">FIFO/FEFO não seguido</option><option value="Falha de execução||Registro incompleto ou atrasado">Registro incompleto ou atrasado</option></optgroup>
+        <optgroup label="📋 Falha de limpeza"><option value="Falha de limpeza||Resíduo em superfície de contato">Resíduo em superfície de contato</option><option value="Falha de limpeza||Resíduo em superfície sem contato">Resíduo em superfície sem contato</option><option value="Falha de limpeza||Frequência de limpeza não cumprida">Frequência de limpeza não cumprida</option><option value="Falha de limpeza||Limpeza reprovada">Limpeza reprovada</option><option value="Falha de limpeza||Risco de contaminação cruzada">Risco de contaminação cruzada</option></optgroup>
+        <optgroup label="📋 Defeito no produto"><option value="Defeito||Cor fora do padrão">Cor fora do padrão</option><option value="Defeito||Aparência fora do padrão">Aparência fora do padrão</option><option value="Defeito||Formato/geometria fora do padrão">Formato/geometria fora do padrão</option><option value="Defeito||Quebra/trinca/fragmentação">Quebra/trinca/fragmentação</option><option value="Defeito||Manchas/pontos/bolhas">Manchas/pontos/bolhas</option><option value="Defeito||Textura fora do padrão">Textura fora do padrão</option><option value="Defeito||Cristalização/bloom">Cristalização/bloom</option><option value="Defeito||Peso líquido fora do padrão">Peso líquido fora do padrão</option><option value="Defeito||Recheio/cobertura fora da proporção">Recheio/cobertura fora da proporção</option><option value="Defeito||Corpo estranho visual">Corpo estranho visual</option><option value="Defeito||Alérgeno não declarado">Alérgeno não declarado</option></optgroup>
+        <optgroup label="📋 Falha de PCC/PPRO"><option value="PCC/PPRO||Monitoramento não realizado">Monitoramento não realizado</option><option value="PCC/PPRO||Desvio sem ação corretiva">Desvio sem ação corretiva</option><option value="PCC/PPRO||Detector de metais reprovado">Detector de metais reprovado</option></optgroup>
+        <optgroup label="📋 Falha de MP/Embalagem"><option value="MP/Embalagem||MP fora de especificação">MP fora de especificação</option><option value="MP/Embalagem||Rótulo trocado">Rótulo trocado</option><option value="MP/Embalagem||Validade/lote incorreto">Validade/lote incorreto</option><option value="MP/Embalagem||Selagem deficiente">Selagem deficiente</option></optgroup>
+        <optgroup label="➕ Outro"><option value="Outros||Outros">Outros (comentário)</option></optgroup>
+      </select>
+      <input id="nc-qty" class="fi" type="number" placeholder="Qtd" style="width:70px"/>
+      <button class="add-evt-btn" onclick="addNc()">+ Add</button>
+    </div>
+    <div id="nc-outros-box" style="display:none;margin-top:8px"><label class="fl">Descreva</label><input id="nc-outros-txt" class="fi" type="text"/></div>
+    <div class="fgfull" style="margin-top:10px"><label class="fl">Comentário qualidade</label><textarea id="f-com-q" class="fi" placeholder="Observações…"></textarea></div>
+  </div>
+
+  <!-- Segurança -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:var(--purple)"></div><span class="fsec-title">S — SEGURANÇA (Bird)</span></div>
+    <div id="inc-list" class="evt-list"></div>
+    <div class="add-evt-row">
+      <select id="inc-cat-sel" class="add-evt-sel">
+        <option value="">Selecione…</option>
+        <option value="nenhum">✅ Nenhum evento no turno</option>
+        <optgroup label="🔺 Quase-acidente"><option value="Quase-acidente||Escorregão sem queda">Escorregão sem queda</option><option value="Quase-acidente||Tropeço sem queda">Tropeço sem queda</option><option value="Quase-acidente||Quase atropelamento">Quase atropelamento</option><option value="Quase-acidente||Contato evitado com parte móvel">Contato evitado com parte móvel</option><option value="Quase-acidente||Proteção aberta a tempo">Proteção aberta a tempo</option><option value="Quase-acidente||Queda de objeto sem atingir">Queda de objeto sem atingir</option><option value="Quase-acidente||Quase choque elétrico">Quase choque elétrico</option><option value="Quase-acidente||Quase queda de altura">Quase queda de altura</option><option value="Quase-acidente||Ato inseguro interrompido">Ato inseguro interrompido</option></optgroup>
+        <optgroup label="🔺 Dano material"><option value="Dano material||Colisão com estrutura">Colisão com estrutura</option><option value="Dano material||Colisão com equipamento">Colisão com equipamento</option><option value="Dano material||Quebra de sensor">Quebra de sensor</option><option value="Dano material||Queda de pallet/carga">Queda de pallet/carga</option><option value="Dano material||Princípio de incêndio">Princípio de incêndio</option><option value="Dano material||Quebra de utensílio">Quebra de utensílio</option></optgroup>
+        <optgroup label="🔺 Lesão leve"><option value="Lesão leve||Corte superficial">Corte superficial</option><option value="Lesão leve||Perfuração leve">Perfuração leve</option><option value="Lesão leve||Queimadura térmica leve">Queimadura térmica leve</option><option value="Lesão leve||Torção leve">Torção leve</option><option value="Lesão leve||Choque elétrico leve">Choque elétrico leve</option></optgroup>
+        <optgroup label="🔺 Acidente grave"><option value="Acidente grave||Aprisionamento">Aprisionamento</option><option value="Acidente grave||Amputação/laceração">Amputação/laceração</option><option value="Acidente grave||Esmagamento">Esmagamento</option><option value="Acidente grave||Choque elétrico grave">Choque elétrico grave</option><option value="Acidente grave||Incêndio/explosão">Incêndio/explosão</option><option value="Acidente grave||Fratura/trauma grave">Fratura/trauma grave</option></optgroup>
+        <optgroup label="➕ Outro"><option value="Outros||Outros">Outros (comentário)</option></optgroup>
+      </select>
+      <button class="add-evt-btn" onclick="addInc()">+ Registrar</button>
+    </div>
+    <div id="inc-outros-box" style="display:none;margin-top:8px"><label class="fl">Descreva</label><input id="inc-outros-txt" class="fi" type="text"/></div>
+  </div>
+
+  <!-- Moral -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:#EA580C"></div><span class="fsec-title">M — MORAL / PRESENÇA</span></div>
+    <div class="fg">
+      <div><label class="fl">Total colaboradores</label><input id="f-total" class="fi" type="number" placeholder="0"/></div>
+      <div><label class="fl">Presentes</label><input id="f-pres" class="fi" type="number" placeholder="0"/></div>
+    </div>
+  </div>
+
+  <!-- Padrões -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:#0369A1"></div><span class="fsec-title">📋 ADERÊNCIA A PADRÕES</span></div>
+    <p style="font-size:9px;color:var(--muted);font-family:'DM Mono';margin-bottom:8px">C = Conforme · DL = Desvio leve · DG = Desvio grave · NA = Não aplicável</p>
+    <p id="pad-counter" style="font-size:10px;color:var(--muted);font-family:'DM Mono';margin-bottom:10px">0/22 verificados</p>
+    <div id="pad-list"></div>
+  </div>
+
+  <button class="save-btn" id="save-btn" onclick="saveEntry()">💾 Salvar no Supabase</button>
+</div>
+<div class="footer"><span>ODARA · PQCDSM v9 · Entrada</span><span></span></div>
+<div class="toast" id="toast"></div>
+<script src="shared.js"></script>
+<script>
+let formNcs=[],formIncs=[],formPadroes={},formPadComents={},formSkus=[];
+let tipoInput='dosagem';
+
+function setTipoInput(t,el){tipoInput=t;el.parentElement.querySelectorAll('.ponto-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');document.getElementById('inp-dosagem').style.display=t==='dosagem'?'block':'none';document.getElementById('inp-embalagem').style.display=t==='embalagem'?'block':'none';}
+function onLinhaChange(){const l=document.getElementById('f-linha').value;document.getElementById('f-sku').innerHTML=(SKUS[l]||[]).map(s=>'<option value="'+s.cod+'">'+s.cod+' — '+s.desc+'</option>').join('');}
+function addSku(){
+  if(tipoInput==='dosagem'){const tp=document.getElementById('f-tipo-prod').value,meta=+document.getElementById('f-meta-dos').value||0,real=+document.getElementById('f-real-dos').value||0;formSkus.push({tipo:'dosagem',tipoProduto:tp,sku:tp,desc:'Dosagem '+tp,meta,real,gram:0});['f-meta-dos','f-real-dos'].forEach(id=>document.getElementById(id).value='');}
+  else{const l=document.getElementById('f-linha').value,cod=document.getElementById('f-sku').value,s=(SKUS[l]||[]).find(x=>x.cod===cod)||{cod,desc:'',gram:0};const meta=+document.getElementById('f-meta-unid').value||0,real=+document.getElementById('f-real-unid').value||0;formSkus.push({tipo:'embalagem',sku:s.cod,desc:s.desc,gram:s.gram,meta,real});['f-meta-unid','f-real-unid'].forEach(id=>document.getElementById(id).value='');}
+  renderSkuList();showToast('✅ Adicionado','ok');
+}
+function removeSku(i){formSkus.splice(i,1);renderSkuList();}
+function renderSkuList(){document.getElementById('sku-list').innerHTML=formSkus.map((s,i)=>'<div class="evt-item"><span class="evt-cat">'+s.desc.slice(0,30)+'</span><span class="evt-cnt" style="width:auto;padding:0 8px">Meta:'+s.meta+' Real:'+s.real+'</span><button class="evt-del" onclick="removeSku('+i+')">✕</button></div>').join('');}
+function addNc(){const sel=document.getElementById('nc-cat-sel').value,qty=parseInt(document.getElementById('nc-qty').value)||1;if(!sel){showToast('⚠️ Selecione','err');return;}const[cat,mode]=sel.split('||');let fm=mode;if(mode==='Outros'){const t=document.getElementById('nc-outros-txt').value.trim();fm=t?'Outros: '+t:'Outros';document.getElementById('nc-outros-txt').value='';}const ex=formNcs.find(n=>n.mode===fm);if(ex)ex.qty+=qty;else formNcs.push({cat,mode:fm,qty});document.getElementById('nc-qty').value='';renderNcList();}
+function removeNc(i){formNcs.splice(i,1);renderNcList();}
+function renderNcList(){document.getElementById('nc-list').innerHTML=formNcs.map((n,i)=>'<div class="evt-item"><span class="evt-cat" style="font-size:10px"><strong>'+n.cat+'</strong> · '+n.mode+'</span><span class="evt-cnt">'+n.qty+'</span><button class="evt-del" onclick="removeNc('+i+')">✕</button></div>').join('');}
+document.getElementById('nc-cat-sel').addEventListener('change',function(){document.getElementById('nc-outros-box').style.display=this.value.includes('Outros')?'block':'none';});
+function addInc(){const sel=document.getElementById('inc-cat-sel').value;if(!sel){showToast('⚠️ Selecione','err');return;}if(sel==='nenhum'){formIncs=[{camada:'nenhum',modo:'Nenhum evento no turno'}];renderIncList();return;}const[camada,modo]=sel.split('||');let fm=modo;if(modo==='Outros'){const t=document.getElementById('inc-outros-txt').value.trim();fm=t?'Outros: '+t:'Outros';document.getElementById('inc-outros-txt').value='';}formIncs.push({camada,modo:fm});renderIncList();}
+function removeInc(i){formIncs.splice(i,1);renderIncList();}
+function renderIncList(){document.getElementById('inc-list').innerHTML=formIncs.map((n,i)=>'<div class="evt-item"><span class="evt-cat" style="font-size:10px">'+(n.camada==='nenhum'?'✅ ':'🔺 <strong>'+n.camada+'</strong> · ')+n.modo+'</span><button class="evt-del" onclick="removeInc('+i+')">✕</button></div>').join('');}
+document.getElementById('inc-cat-sel').addEventListener('change',function(){document.getElementById('inc-outros-box').style.display=this.value.includes('Outros')?'block':'none';});
+function renderPadList(){let html='',checked=0;PADROES_ITEMS.forEach((p,i)=>{const v=formPadroes[i]||'';if(v)checked++;html+='<div class="pad-item"><span class="pad-txt">'+p.item+'<br><span style="font-size:9px;color:var(--muted);font-style:italic">'+p.obj+'</span></span><span class="pad-crit '+p.crit+'">'+p.crit.toUpperCase()+'</span><div class="pad-status">'+['c','dl','dg','na'].map(s=>'<button class="pad-btn '+(v===s?s:'')+'" onclick="setPad('+i+',\''+s+'\')">'+(s==='c'?'✓':s==='dl'?'!':s==='dg'?'✕':'—')+'</button>').join('')+'</div></div><div style="padding:0 0 6px"><input class="fi" type="text" placeholder="Comentário (opcional)" style="font-size:10px;padding:5px 8px" value="'+(formPadComents[i]||'').replace(/"/g,'&quot;')+'" onchange="formPadComents['+i+']=this.value"/></div>';});document.getElementById('pad-counter').textContent=checked+'/'+PADROES_ITEMS.length+' verificados';document.getElementById('pad-list').innerHTML=html;}
+function setPad(i,s){formPadroes[i]=formPadroes[i]===s?'':s;renderPadList();}
+
+async function saveEntry(){
+  const sup=document.getElementById('f-sup').value.trim();if(!sup){showToast('⚠️ Supervisor','err');return;}
+  const l=document.getElementById('f-linha').value;
+  let skus=formSkus.length?formSkus:[];
+  const primary=skus[0]||{};
+  const btn=document.getElementById('save-btn');btn.disabled=true;btn.textContent='⏳ Salvando…';
+  const payload={data:document.getElementById('f-data').value,linha:l,turno:document.getElementById('f-turno').value,supervisor:sup,tipo_input:tipoInput,tipo_produto:tipoInput==='dosagem'?(primary.tipoProduto||''):'',sku:primary.sku||'',sku_desc:primary.desc||'',sku_gram:primary.gram||0,meta_unid:primary.meta||0,real_unid:primary.real||0,perda_dl_kg:+document.getElementById('f-perda-dl').value||0,perda_biscoito_kg:+document.getElementById('f-perda-bisc').value||0,perda_rejeito_dosado_kg:+document.getElementById('f-perda-rej').value||0,perda_quebra_bolacha_kg:+document.getElementById('f-perda-qbr').value||0,perda_dosado_un:+document.getElementById('f-perda-dos-un').value||0,perda_coberto_un:+document.getElementById('f-perda-cob-un').value||0,perda_chocolate_un:+document.getElementById('f-perda-cho-un').value||0,total_colab:+document.getElementById('f-total').value||0,presentes:+document.getElementById('f-pres').value||0,ncs:formNcs,incidentes:formIncs,padroes:formPadroes,padroes_comentarios:formPadComents,comentario_p:document.getElementById('f-com-p').value,comentario_q:document.getElementById('f-com-q').value,skus_produzidos:skus};
+  try{await sbInsert('pqcdsm',payload);showToast('✅ Salvo!','ok');clearForm();}
+  catch(e){document.getElementById('form-err').style.display='block';document.getElementById('form-err').textContent='❌ '+e.message;}
+  btn.disabled=false;btn.textContent='💾 Salvar no Supabase';
+}
+function clearForm(){['f-perda-dl','f-perda-bisc','f-perda-rej','f-perda-qbr','f-perda-dos-un','f-perda-cob-un','f-perda-cho-un','f-total','f-pres','f-meta-dos','f-real-dos','f-meta-unid','f-real-unid'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('f-sup').value='';document.getElementById('f-com-p').value='';document.getElementById('f-com-q').value='';formNcs=[];formIncs=[];formPadroes={};formPadComents={};formSkus=[];renderNcList();renderIncList();renderPadList();renderSkuList();document.getElementById('form-saved').style.display='block';setTimeout(()=>document.getElementById('form-saved').style.display='none',3000);}
+
+document.getElementById('f-data').value=today();
+onLinhaChange();renderPadList();renderNav('entrada');
+</script>
+</body>
+</html>

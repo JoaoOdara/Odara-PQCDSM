@@ -1,0 +1,41 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Odara · Plano de Ação</title><link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500;700&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/><link rel="stylesheet" href="shared.css"/></head><body>
+<div class="hdr"><div class="logo"><div class="logo-bar"></div><div><span class="logo-title">ODARA</span><span class="logo-tag">PLANO DE AÇÃO</span></div></div></div>
+<div class="nav-bar" id="main-nav"></div>
+<div class="content">
+  <div class="form-section"><div class="fsec-hdr"><div class="fsec-bar" style="background:var(--yellow)"></div><span class="fsec-title">NOVA AÇÃO</span></div>
+    <div class="fg">
+      <div class="fgfull"><label class="fl">Descrição *</label><textarea id="a-desc" class="fi" placeholder="Descreva a ação necessária…"></textarea></div>
+      <div><label class="fl">Origem</label><select id="a-orig" class="fi"><option>Desvio de padrão</option><option>NC Qualidade</option><option>Evento Segurança</option><option>Perda de processo</option><option>Auditoria</option><option>Reunião gestão</option><option>Outro</option></select></div>
+      <div><label class="fl">Área</label><select id="a-area" class="fi"><option>Produção</option><option>Qualidade</option><option>Manutenção</option><option>PCP</option><option>Almoxarifado</option></select></div>
+      <div><label class="fl">Responsável *</label><input id="a-resp" class="fi" type="text" placeholder="Nome"/></div>
+      <div><label class="fl">Prazo</label><input id="a-prazo" class="fi" type="date"/></div>
+      <div><label class="fl">Prioridade</label><select id="a-prio" class="fi"><option value="alta">Alta</option><option value="media" selected>Média</option><option value="baixa">Baixa</option></select></div>
+    </div>
+    <button class="add-evt-btn" style="width:100%;padding:10px;text-align:center;border-radius:10px;font-size:12px;margin-top:10px" onclick="addAcao()">+ Registrar Ação</button>
+  </div>
+  <div class="section-lbl">Ações Abertas</div>
+  <div id="acoes-list"></div>
+</div>
+<div class="footer"><span>ODARA · PQCDSM v9 · Ações</span><span></span></div>
+<div class="toast" id="toast"></div>
+<script src="shared.js"></script>
+<script>
+let acoes=[];
+async function loadAcoes(){try{acoes=await sbQuery('acoes','select=*&order=prazo.asc');renderAcoes();}catch(e){showToast('❌ '+e.message,'err');}}
+function renderAcoes(){
+  const list=document.getElementById('acoes-list');
+  if(!acoes.length){list.innerHTML='<div class="empty">Nenhuma ação registrada</div>';return;}
+  list.innerHTML=acoes.map(a=>{
+    const isLate=a.status==='aberta'&&a.prazo&&new Date(a.prazo+'T23:59')<new Date();
+    const st=isLate?'atrasada':a.status;
+    return '<div class="action-card"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div style="font-weight:700;font-size:13px">'+a.descricao+'</div><div style="font-size:10px;color:var(--muted);font-family:\'DM Mono\';margin-top:4px">'+a.area+' · '+a.responsavel+(a.prazo?' · Prazo: '+new Date(a.prazo+'T12:00').toLocaleDateString('pt-BR'):'')+'</div><div style="font-size:9px;color:var(--muted);margin-top:2px">Origem: '+a.origem+'</div></div><div style="display:flex;gap:4px;align-items:center"><span class="action-status '+st+'">'+st.toUpperCase()+'</span></div></div><div class="hist-actions" style="margin-top:8px"><select class="fi" style="width:auto;font-size:10px;padding:4px 8px" onchange="updateStatus('+a.id+',this.value)"><option value="aberta"'+(a.status==='aberta'?' selected':'')+'>Aberta</option><option value="andamento"'+(a.status==='andamento'?' selected':'')+'>Em andamento</option><option value="concluida"'+(a.status==='concluida'?' selected':'')+'>Concluída</option></select></div></div>';
+  }).join('');
+}
+async function addAcao(){
+  const desc=document.getElementById('a-desc').value.trim(),resp=document.getElementById('a-resp').value.trim();
+  if(!desc||!resp){showToast('⚠️ Preencha descrição e responsável','err');return;}
+  try{await sbInsert('acoes',{descricao:desc,responsavel:resp,prazo:document.getElementById('a-prazo').value||null,origem:document.getElementById('a-orig').value,area:document.getElementById('a-area').value,prioridade:document.getElementById('a-prio').value});document.getElementById('a-desc').value='';document.getElementById('a-resp').value='';showToast('✅ Ação registrada','ok');loadAcoes();}catch(e){showToast('❌ '+e.message,'err');}
+}
+async function updateStatus(id,status){try{await sbUpdate('acoes',id,{status,data_conclusao:status==='concluida'?today():null});showToast('✅ Status atualizado','ok');loadAcoes();}catch(e){showToast('❌ '+e.message,'err');}}
+renderNav('acoes');loadAcoes();
+</script></body></html>
