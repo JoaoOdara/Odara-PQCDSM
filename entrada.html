@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Odara · Entrada</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500;700&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="shared.css"/>
+<style>
+.pad-cat{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Mono';margin:12px 0 6px;padding-top:8px;border-top:1px solid var(--border)}
+.pad-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.pad-txt{flex:1;font-size:11px;min-width:200px}.pad-crit{font-size:8px;font-family:'DM Mono';padding:2px 6px;border-radius:6px;font-weight:700}
+.pad-crit.alta{background:#FEE2E2;color:var(--red)}.pad-crit.media{background:#FEF9C3;color:#92400E}
+.pad-status{display:flex;gap:3px}
+.pad-btn{width:28px;height:28px;border:1.5px solid var(--border);border-radius:6px;background:var(--white);cursor:pointer;font-size:12px;font-weight:700;color:var(--muted);transition:.15s}
+.pad-btn.c{background:#DCFCE7;border-color:#86EFAC;color:var(--green)}.pad-btn.dl{background:#FEF9C3;border-color:#FCD34D;color:#92400E}.pad-btn.dg{background:#FEE2E2;border-color:#FCA5A5;color:var(--red)}.pad-btn.na{background:var(--lg);border-color:var(--border);color:var(--muted)}
+.pad-comment-btn{font-size:10px;color:var(--blue);cursor:pointer;font-family:'DM Mono';padding:2px 6px}
+.nc-cats{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.nc-cat-btn{padding:5px 10px;border:1px solid var(--border);border-radius:8px;font-size:10px;font-family:'DM Mono';cursor:pointer;background:var(--white);transition:.15s}
+.nc-cat-btn.active{background:var(--yellow);border-color:var(--yellow);color:var(--black);font-weight:700}
+.bird-card{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;cursor:pointer;transition:.15s;border:1.5px solid var(--border);margin-bottom:6px}
+.bird-card:hover{background:var(--lg)}.bird-card.active{border-color:var(--yellow);background:#FFFBEB}
+.bird-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.manut-toggle{display:flex;align-items:center;gap:10px;padding:10px;background:var(--lg);border-radius:10px;margin-bottom:10px}
+.manut-toggle label{font-size:11px;font-family:'DM Mono';cursor:pointer;display:flex;align-items:center;gap:6px}
+</style>
+</head>
+<body>
+<div class="hdr"><div class="logo"><div class="logo-bar"></div><div><span class="logo-title">ODARA</span><span class="logo-tag">ENTRADA DE DADOS</span></div></div></div>
+<div class="nav-bar" id="main-nav"></div>
+<div class="content">
+  <div id="form-saved" style="display:none;background:#DCFCE7;border:1px solid #86EFAC;border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--green);font-weight:700;text-align:center">✅ Registro salvo com sucesso!</div>
+  <div id="form-err" style="display:none;background:#FEE2E2;border:1px solid #FCA5A5;border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--red);font-weight:700"></div>
+
+  <!-- 1. CABEÇALHO -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:var(--yellow)"></div><span class="fsec-title">1 · CABEÇALHO</span></div>
+    <div class="fg">
+      <div><label class="fl">Data</label><input id="f-data" class="fi" type="date"/></div>
+      <div><label class="fl">Linha</label>
+        <select id="f-linha" class="fi" onchange="onLinhaChange()"><option value="L1">Linha 1</option><option value="L2">Linha 2</option><option value="L3">Linha 3</option></select>
+      </div>
+      <div><label class="fl">Turno</label>
+        <select id="f-turno" class="fi"><option value="T1">Turno 1 (07:00–16:48)</option><option value="T2">Turno 2 (16:00–01:48)</option></select>
+      </div>
+      <div><label class="fl">Supervisor</label><input id="f-sup" class="fi" type="text" placeholder="Nome do supervisor"/></div>
+    </div>
+  </div>
+
+  <!-- 2. PRODUÇÃO — SKU primeiro, depois tipo -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:var(--blue)"></div><span class="fsec-title">2 · PRODUÇÃO</span></div>
+
+    <!-- SKU Selection FIRST -->
+    <div style="margin-bottom:12px">
+      <label class="fl">SKU</label>
+      <select id="f-sku" class="fi" onchange="onSkuChange()"></select>
+      <div style="background:var(--lg);border-radius:8px;padding:6px 10px;margin-top:4px"><span style="font-size:10px;color:var(--muted);font-family:'DM Mono'" id="f-sku-info">—</span></div>
+    </div>
+
+    <!-- Tipo: Processo ou Produto Final -->
+    <div style="margin-bottom:12px">
+      <label class="fl">Tipo de Input</label>
+      <div class="ponto-tab" style="margin:0">
+        <button class="ponto-btn" id="btn-tipo-dos" onclick="setTipoInput('dosagem')">🔧 Processo (Dosagem)</button>
+        <button class="ponto-btn active" id="btn-tipo-emb" onclick="setTipoInput('embalagem')">📦 Produto Final (Embalagem)</button>
+      </div>
+    </div>
+
+    <!-- Dosagem-specific fields -->
+    <div id="dos-fields" style="display:none;margin-bottom:12px">
+      <div class="fg">
+        <div><label class="fl">Tipo de Produto</label>
+          <select id="f-tipo-prod" class="fi"><option value="classico">Clássico</option><option value="mini">Mini</option><option value="zero">Zero</option><option value="crocante">Crocante</option></select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quantidades -->
+    <div class="fg">
+      <div><label class="fl">Meta (unidades)</label><input id="f-meta-unid" class="fi" type="number" placeholder="0"/></div>
+      <div><label class="fl">Real (unidades)</label><input id="f-real-unid" class="fi" type="number" placeholder="0"/></div>
+    </div>
+
+    <!-- Multi-SKU -->
+    <button class="add-evt-btn" style="margin-top:10px;width:100%;padding:10px;text-align:center;border-radius:10px;font-size:12px" onclick="addSku()">+ Adicionar SKU ao registro</button>
+    <div id="sku-list" class="evt-list" style="margin-top:8px"></div>
+  </div>
+
+  <!-- 3. MANUTENÇÃO -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:var(--orange)"></div><span class="fsec-title">3 · MANUTENÇÃO</span></div>
+    <div class="manut-toggle">
+      <label><input type="checkbox" id="f-manut" onchange="toggleManut()"/> Houve parada de manutenção?</label>
+    </div>
+    <div id="manut-fields" style="display:none">
+      <div class="fg">
+        <div><label class="fl">Duração da parada (minutos)</label><input id="f-manut-min" class="fi" type="number" placeholder="0" min="0"/></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. PERDAS -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:var(--red)"></div><span class="fsec-title">4 · PERDAS</span></div>
+
+    <div style="font-size:10px;color:var(--muted);font-family:'DM Mono';margin-bottom:10px;padding:6px 10px;background:var(--lg);border-radius:8px">Perda total = varredura + biscoito quebrado + sobrepeso (calculado automaticamente das pesagens)</div>
+
+    <div id="dos-loss-fields">
+      <div class="wgt-input-title">Perdas de Processo (kg)</div>
+      <div class="fg">
+        <div><label class="fl">Varredura</label><input id="f-perda-varr" class="fi" type="number" step="0.1" placeholder="0"/></div>
+        <div><label class="fl">Doce de Leite</label><input id="f-perda-dl" class="fi" type="number" step="0.1" placeholder="0"/></div>
+        <div><label class="fl">Biscoito Quebrado</label><input id="f-perda-bisc" class="fi" type="number" step="0.1" placeholder="0"/></div>
+        <div><label class="fl">Rejeito Dosado</label><input id="f-perda-rej" class="fi" type="number" step="0.1" placeholder="0"/></div>
+        <div><label class="fl">Quebra Bolacha</label><input id="f-perda-qbr" class="fi" type="number" step="0.1" placeholder="0"/></div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <div class="wgt-input-title">Perdas de Embalagem (unidades)</div>
+      <div class="fg">
+        <div><label class="fl">Dosado</label><input id="f-perda-dos-un" class="fi" type="number" placeholder="0"/></div>
+        <div><label class="fl">Coberto</label><input id="f-perda-cob-un" class="fi" type="number" placeholder="0"/></div>
+        <div><label class="fl">Chocolate</label><input id="f-perda-cho-un" class="fi" type="number" placeholder="0"/></div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <div class="wgt-input-title">Material de Embalagem</div>
+      <div class="fg">
+        <div><label class="fl">BOPP (kg)</label><input id="f-perda-bopp" class="fi" type="number" step="0.1" placeholder="0"/></div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <label class="fl">Comentário sobre perdas</label>
+      <textarea id="f-com-perdas" class="fi" placeholder="Descreva observações sobre as perdas do turno..."></textarea>
+    </div>
+  </div>
+
+  <!-- 5. EQUIPE -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:var(--orange)"></div><span class="fsec-title">5 · EQUIPE</span></div>
+    <div class="fg">
+      <div><label class="fl">Total colaboradores (quadro)</label><input id="f-total" class="fi" type="number" placeholder="0"/></div>
+      <div><label class="fl">Presentes</label><input id="f-pres" class="fi" type="number" placeholder="0"/></div>
+    </div>
+  </div>
+
+  <!-- 6. QUALIDADE -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:var(--yellow)"></div><span class="fsec-title">6 · NÃO CONFORMIDADES</span></div>
+    <div class="nc-cats" id="nc-cats"></div>
+    <div id="nc-modes" style="display:none">
+      <div class="fg" style="margin-bottom:8px;align-items:end">
+        <div><label class="fl">Modo de falha</label><select id="nc-mode" class="fi"></select></div>
+        <div><label class="fl">Qty</label><input id="nc-qty" class="fi" type="number" value="1" min="1"/></div>
+      </div>
+      <button class="add-evt-btn" style="width:100%;padding:8px;text-align:center;border-radius:8px;font-size:11px" onclick="addNc()">+ Adicionar NC</button>
+    </div>
+    <div id="nc-list" class="evt-list" style="margin-top:8px"></div>
+    <div style="margin-top:10px"><label class="fl">Comentário Qualidade</label><textarea id="f-com-q" class="fi" placeholder="Observações de qualidade..."></textarea></div>
+  </div>
+
+  <!-- 7. SEGURANÇA -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:var(--purple)"></div><span class="fsec-title">7 · SEGURANÇA (Bird)</span></div>
+    <div id="bird-none" class="bird-card active" onclick="setNenhumEvt()"><div class="bird-dot" style="background:var(--green)"></div><span style="font-size:12px;font-weight:700;color:var(--green)">✓ Nenhum evento no turno</span></div>
+    <div id="bird-cards"></div>
+    <div id="bird-form" style="display:none;margin-top:10px">
+      <div class="fg" style="align-items:end">
+        <div><label class="fl">Modo</label><select id="bird-mode" class="fi"></select></div>
+        <div><label class="fl">Descrição</label><input id="bird-desc" class="fi" type="text" placeholder="Detalhe"/></div>
+      </div>
+      <button class="add-evt-btn" style="margin-top:8px;width:100%;padding:8px;text-align:center;border-radius:8px;font-size:11px" onclick="addInc()">+ Registrar Evento</button>
+    </div>
+    <div id="inc-list" class="evt-list" style="margin-top:8px"></div>
+  </div>
+
+  <!-- 8. PADRÕES -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:var(--teal)"></div><span class="fsec-title">8 · CHECKLIST DE PADRÕES</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-size:10px;color:var(--muted);font-family:'DM Mono'" id="pad-counter">0/22 verificados</span>
+      <span style="font-size:9px;color:var(--blue);font-family:'DM Mono';cursor:pointer" onclick="resetPad()">↻ limpar</span>
+    </div>
+    <div id="pad-list"></div>
+  </div>
+
+  <!-- 9. COMENTÁRIOS -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:var(--blue)"></div><span class="fsec-title">9 · COMENTÁRIOS</span></div>
+    <label class="fl">Comentário Produção</label>
+    <textarea id="f-com-p" class="fi" placeholder="Observações gerais do turno..."></textarea>
+  </div>
+
+  <button class="save-btn" id="save-btn" onclick="saveEntry()">💾 Salvar Registro</button>
+</div>
+
+<div class="footer"><span>ODARA · PQCDSM v10 · Entrada</span><span></span></div>
+<div class="toast" id="toast"></div>
+
+<script src="shared.js"></script>
+<script>
+let tipoInput='embalagem',formNcs=[],formIncs=[],formPadroes={},formPadComents={},formSkus=[];
+let birdCamada=null;
+
+// NC categories and modes
+const NC_CATS={
+  'Aparência':[{m:'Mancha chocolate'},{m:'Deformação'},{m:'Riscos/marcas'},{m:'Falha cobertura'},{m:'Excesso chocolate'},{m:'Bolhas'}],
+  'Peso':[{m:'Abaixo Qn-T'},{m:'Acima limite'},{m:'Variação excessiva'}],
+  'Embalagem':[{m:'Solda falha'},{m:'Rótulo torto'},{m:'Rótulo errado'},{m:'Sem data'},{m:'Embalagem danificada'},{m:'Código barras ilegível'}],
+  'Corpo estranho':[{m:'Metal'},{m:'Plástico'},{m:'Inseto'},{m:'Cabelo'},{m:'Outro CE'}],
+  'Validade':[{m:'Produto vencido'},{m:'Data ilegível'},{m:'Shelf life curto'}],
+  'Processo':[{m:'Biscoito cru'},{m:'Biscoito queimado'},{m:'DL cristalizado'},{m:'Chocolate destemperado'},{m:'Massa irregular'},{m:'Recheio vazando'}],
+  'Outros':[{m:'Outro (descrever)'}]
+};
+let ncCat=null;
+
+// Bird modes by level
+const BIRD_MODES={
+  'Quase-acidente':['Escorregão','Tropeço','Quase queda objeto','Quase prensar','Quase corte','Quase choque elétrico','Quase queimadura','Desvio ergonômico','Falta EPI observada','Outro'],
+  'Dano material':['Quebra equipamento','Derramamento','Colisão empilhadeira','Queda produto','Dano estrutural','Vazamento','Outro'],
+  'Lesão leve':['Corte superficial','Queimadura leve','Contusão','Irritação pele','Outro'],
+  'Acidente grave':['Fratura','Queimadura grave','Amputação','Queda altura','Choque elétrico','Prensar grave','Intoxicação','Outro']
+};
+
+function onLinhaChange(){
+  const l=document.getElementById('f-linha').value;
+  document.getElementById('f-sku').innerHTML=(SKUS[l]||[]).map(s=>'<option value="'+s.cod+'">'+s.cod+' — '+s.desc+'</option>').join('');
+  // Only L1 and L2 have dosagem
+  const canDos=l==='L1'||l==='L2';
+  document.getElementById('btn-tipo-dos').style.display=canDos?'':'none';
+  if(!canDos&&tipoInput==='dosagem')setTipoInput('embalagem');
+  onSkuChange();
+}
+
+function onSkuChange(){
+  const l=document.getElementById('f-linha').value,cod=document.getElementById('f-sku').value;
+  const s=(SKUS[l]||[]).find(x=>x.cod===cod);
+  document.getElementById('f-sku-info').textContent=s?s.desc+' · '+s.gram+'g':'—';
+}
+
+function setTipoInput(t){
+  tipoInput=t;
+  document.getElementById('btn-tipo-dos').classList.toggle('active',t==='dosagem');
+  document.getElementById('btn-tipo-emb').classList.toggle('active',t==='embalagem');
+  document.getElementById('dos-fields').style.display=t==='dosagem'?'block':'none';
+}
+
+function toggleManut(){
+  document.getElementById('manut-fields').style.display=document.getElementById('f-manut').checked?'block':'none';
+}
+
+// SKU multi-add
+function addSku(){
+  const l=document.getElementById('f-linha').value,cod=document.getElementById('f-sku').value;
+  const s=(SKUS[l]||[]).find(x=>x.cod===cod);if(!s)return;
+  const meta=+document.getElementById('f-meta-unid').value||0,real=+document.getElementById('f-real-unid').value||0;
+  if(!real&&!meta){showToast('Informe meta ou real','err');return;}
+  formSkus.push({sku:s.cod,desc:s.desc,gram:s.gram,meta,real,tipoProduto:tipoInput==='dosagem'?document.getElementById('f-tipo-prod').value:''});
+  document.getElementById('f-meta-unid').value='';document.getElementById('f-real-unid').value='';
+  renderSkuList();showToast('SKU adicionado','ok');
+}
+function removeSku(i){formSkus.splice(i,1);renderSkuList();}
+function renderSkuList(){
+  document.getElementById('sku-list').innerHTML=formSkus.map((s,i)=>'<div class="evt-item"><span class="evt-cat">'+s.sku+' — M:'+s.meta+' R:'+s.real+'</span><button class="evt-del" onclick="removeSku('+i+')">✕</button></div>').join('');
+}
+
+// NCs
+function renderNcCats(){
+  document.getElementById('nc-cats').innerHTML=Object.keys(NC_CATS).map(c=>'<button class="nc-cat-btn '+(ncCat===c?'active':'')+'" onclick="selectNcCat(\''+c+'\')">'+c+'</button>').join('');
+}
+function selectNcCat(c){
+  ncCat=c;renderNcCats();
+  document.getElementById('nc-modes').style.display='block';
+  document.getElementById('nc-mode').innerHTML=(NC_CATS[c]||[]).map(m=>'<option value="'+m.m+'">'+m.m+'</option>').join('');
+}
+function addNc(){
+  const mode=document.getElementById('nc-mode').value,qty=+document.getElementById('nc-qty').value||1;
+  if(!mode)return;formNcs.push({cat:ncCat,mode,qty});document.getElementById('nc-qty').value='1';renderNcList();
+}
+function removeNc(i){formNcs.splice(i,1);renderNcList();}
+function renderNcList(){
+  document.getElementById('nc-list').innerHTML=formNcs.map((n,i)=>'<div class="evt-item"><span class="evt-cnt">'+n.qty+'</span><span class="evt-cat">'+n.cat+' → '+n.mode+'</span><button class="evt-del" onclick="removeNc('+i+')">✕</button></div>').join('');
+}
+
+// Bird / Safety
+function renderBirdCards(){
+  document.getElementById('bird-cards').innerHTML=BYRD_LEVELS.map(lv=>'<div class="bird-card '+(birdCamada===lv?'active':'')+'" onclick="selectBird(\''+lv+'\')"><div class="bird-dot" style="background:'+BYRD_COLORS[lv]+'"></div><span style="font-size:11px;font-weight:600">'+lv+'</span></div>').join('');
+}
+function setNenhumEvt(){birdCamada=null;document.getElementById('bird-none').classList.add('active');document.getElementById('bird-form').style.display='none';renderBirdCards();}
+function selectBird(lv){
+  birdCamada=lv;document.getElementById('bird-none').classList.remove('active');
+  document.getElementById('bird-form').style.display='block';
+  document.getElementById('bird-mode').innerHTML=(BIRD_MODES[lv]||[]).map(m=>'<option value="'+m+'">'+m+'</option>').join('');
+  renderBirdCards();
+}
+function addInc(){
+  const modo=document.getElementById('bird-mode').value,desc=document.getElementById('bird-desc').value;
+  if(!birdCamada)return;formIncs.push({camada:birdCamada,modo,descricao:desc});
+  document.getElementById('bird-desc').value='';renderIncList();
+}
+function removeInc(i){formIncs.splice(i,1);renderIncList();}
+function renderIncList(){
+  document.getElementById('inc-list').innerHTML=formIncs.map((n,i)=>'<div class="evt-item"><span class="evt-cat" style="font-size:10px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+(BYRD_COLORS[n.camada]||'#999')+';margin-right:4px"></span><strong>'+n.camada+'</strong> → '+n.modo+(n.descricao?' — '+n.descricao:'')+'</span><button class="evt-del" onclick="removeInc('+i+')">✕</button></div>').join('');
+}
+
+// Standards
+function renderPadList(){
+  let checked=0,html='';
+  PADROES_ITEMS.forEach((p,i)=>{
+    const v=formPadroes[i]||'';if(v)checked++;
+    html+='<div class="pad-item"><span class="pad-txt">'+p.item+'</span><span class="pad-crit '+p.crit+'">'+p.crit.toUpperCase()+'</span><div class="pad-status">'+['c','dl','dg','na'].map(s=>'<button class="pad-btn '+(v===s?s:'')+'" onclick="setPad('+i+',\''+s+'\')">'+(s==='c'?'✓':s==='dl'?'!':s==='dg'?'✕':'—')+'</button>').join('')+'</div>';
+    // Comment toggle
+    html+='<span class="pad-comment-btn" onclick="togglePadComment('+i+')">💬</span>';
+    html+='<div id="pad-com-'+i+'" style="display:'+(formPadComents[i]?'block':'none')+';width:100%;margin-top:4px"><input class="fi" style="font-size:10px;padding:5px 8px" type="text" placeholder="Comentário..." value="'+(formPadComents[i]||'')+'" onchange="formPadComents['+i+']=this.value"/></div>';
+    html+='</div>';
+  });
+  document.getElementById('pad-counter').textContent=checked+'/'+PADROES_ITEMS.length+' verificados';
+  document.getElementById('pad-list').innerHTML=html;
+}
+function setPad(i,s){formPadroes[i]=formPadroes[i]===s?'':s;renderPadList();}
+function togglePadComment(i){const el=document.getElementById('pad-com-'+i);if(el)el.style.display=el.style.display==='none'?'block':'none';}
+function resetPad(){formPadroes={};formPadComents={};renderPadList();}
+
+// SAVE
+async function saveEntry(){
+  const sup=document.getElementById('f-sup').value.trim();
+  if(!sup){showToast('\u26a0\ufe0f Informe o supervisor','err');return;}
+  const l=document.getElementById('f-linha').value;
+  let skus=formSkus.length?formSkus:[];
+  if(!skus.length){
+    const cod=document.getElementById('f-sku').value,s=(SKUS[l]||[]).find(x=>x.cod===cod)||{cod:'',desc:'',gram:0};
+    skus=[{sku:s.cod,desc:s.desc,gram:s.gram,meta:+document.getElementById('f-meta-unid').value||0,real:+document.getElementById('f-real-unid').value||0,tipoProduto:tipoInput==='dosagem'?document.getElementById('f-tipo-prod').value:''}];
+  }
+  const primary=skus[0]||{};
+  const btn=document.getElementById('save-btn');btn.disabled=true;btn.textContent='\u23f3 Salvando\u2026';
+  const payload={
+    data:document.getElementById('f-data').value,
+    linha:l,
+    turno:document.getElementById('f-turno').value,
+    supervisor:sup,
+    tipo_input:tipoInput,
+    tipo_produto:tipoInput==='dosagem'?(primary.tipoProduto||''):'',
+    sku:primary.sku||'',
+    sku_desc:primary.desc||'',
+    sku_gram:primary.gram||0,
+    meta_unid:primary.meta||0,
+    real_unid:primary.real||0,
+    // Losses
+    perda_varredura_kg:+document.getElementById('f-perda-varr').value||0,
+    perda_dl_kg:+document.getElementById('f-perda-dl').value||0,
+    perda_biscoito_kg:+document.getElementById('f-perda-bisc').value||0,
+    perda_rejeito_dosado_kg:+document.getElementById('f-perda-rej').value||0,
+    perda_quebra_bolacha_kg:+document.getElementById('f-perda-qbr').value||0,
+    perda_dosado_un:+document.getElementById('f-perda-dos-un').value||0,
+    perda_coberto_un:+document.getElementById('f-perda-cob-un').value||0,
+    perda_chocolate_un:+document.getElementById('f-perda-cho-un').value||0,
+    perda_bopp_kg:+document.getElementById('f-perda-bopp').value||0,
+    comentario_perdas:document.getElementById('f-com-perdas').value||'',
+    // Maintenance
+    parada_manut:document.getElementById('f-manut').checked,
+    parada_manut_min:+document.getElementById('f-manut-min').value||0,
+    // Team
+    total_colab:+document.getElementById('f-total').value||0,
+    presentes:+document.getElementById('f-pres').value||0,
+    // Quality & Safety
+    ncs:formNcs,
+    incidentes:formIncs.length?formIncs:[{camada:'nenhum',modo:'',descricao:''}],
+    padroes:formPadroes,
+    padroes_comentarios:formPadComents,
+    // Comments
+    comentario_p:document.getElementById('f-com-p').value,
+    comentario_q:document.getElementById('f-com-q').value,
+    skus_produzidos:skus
+  };
+  try{
+    await sbInsert('pqcdsm',payload);
+    showToast('\u2705 Salvo!','ok');clearForm();
+  }catch(e){
+    document.getElementById('form-err').style.display='block';
+    document.getElementById('form-err').textContent='\u274c '+e.message;
+  }
+  btn.disabled=false;btn.textContent='\ud83d\udcbe Salvar Registro';
+}
+
+function clearForm(){
+  ['f-perda-varr','f-perda-dl','f-perda-bisc','f-perda-rej','f-perda-qbr','f-perda-dos-un','f-perda-cob-un','f-perda-cho-un','f-perda-bopp','f-total','f-pres','f-meta-unid','f-real-unid','f-manut-min'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('f-sup').value='';
+  document.getElementById('f-com-p').value='';
+  document.getElementById('f-com-q').value='';
+  document.getElementById('f-com-perdas').value='';
+  document.getElementById('f-manut').checked=false;
+  document.getElementById('manut-fields').style.display='none';
+  formNcs=[];formIncs=[];formPadroes={};formPadComents={};formSkus=[];birdCamada=null;ncCat=null;
+  renderNcList();renderIncList();renderPadList();renderSkuList();renderNcCats();renderBirdCards();
+  document.getElementById('bird-none').classList.add('active');
+  document.getElementById('bird-form').style.display='none';
+  document.getElementById('nc-modes').style.display='none';
+  document.getElementById('form-saved').style.display='block';
+  setTimeout(()=>document.getElementById('form-saved').style.display='none',3000);
+}
+
+// INIT
+document.getElementById('f-data').value=today();
+onLinhaChange();renderNcCats();renderBirdCards();renderPadList();renderNav('entrada');
+</script>
+</body>
+</html>
