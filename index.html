@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Odara · PQCDSM — Dia</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500;700&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="shared.css"/>
+<style>
+.dash-hero{background:var(--grad1);border-radius:20px;padding:24px;margin-bottom:16px;position:relative;overflow:hidden}
+.dash-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:var(--yellow);opacity:.06}
+.hero-date{font-family:'Bebas Neue';font-size:28px;color:var(--yellow);letter-spacing:3px;line-height:1}
+.hero-sub{font-size:10px;color:#9CA3AF;font-family:'DM Mono';margin-top:2px;letter-spacing:1px}
+.hero-badges{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.hero-badge{font-size:9px;font-family:'DM Mono';padding:3px 10px;border-radius:12px;font-weight:600}
+.hero-badge.live{background:#DCFCE7;color:var(--green)}.hero-badge.warn{background:#FEF9C3;color:#92400E}.hero-badge.err{background:#FEE2E2;color:var(--red)}
+.oee-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:14px}
+.oee-card{background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden}
+.oee-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--yellow)}
+.oee-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.oee-lbl{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Mono'}
+.oee-val{font-family:'Bebas Neue';font-size:36px;letter-spacing:1px;line-height:1}
+.oee-sub{font-size:9px;color:var(--muted);font-family:'DM Mono';margin-top:4px}
+.oee-bar{height:6px;background:var(--lg);border-radius:3px;margin-top:8px;overflow:hidden}
+.oee-bar-fill{height:100%;border-radius:3px;transition:width .6s}
+.prod-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:14px}
+.prod-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center}
+.prod-val{font-family:'Bebas Neue';font-size:28px;line-height:1;margin:6px 0 2px}
+.prod-lbl{font-size:9px;color:var(--muted);font-family:'DM Mono';letter-spacing:1px;text-transform:uppercase}
+.prod-sub{font-size:10px;color:var(--muted);margin-top:4px}
+.loss-card{background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px}
+.loss-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px}
+.loss-item{text-align:center;background:var(--lg);border-radius:10px;padding:10px}
+.loss-val{font-family:'Bebas Neue';font-size:22px;line-height:1}
+.loss-lbl{font-size:8px;color:var(--muted);font-family:'DM Mono';letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+.loss-comment{font-size:10px;color:var(--muted);font-style:italic;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.manut-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-family:'DM Mono';padding:3px 10px;border-radius:12px;font-weight:600;background:#FEE2E2;color:var(--red)}
+@media(max-width:600px){.oee-strip{grid-template-columns:1fr 1fr}.prod-strip{grid-template-columns:1fr 1fr}.loss-grid{grid-template-columns:1fr 1fr 1fr}.hero-date{font-size:22px}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="hdr">
+  <div class="logo"><div class="logo-bar"></div><div><div style="display:flex;align-items:baseline"><span class="logo-title">ODARA</span><span style="color:#9CA3AF;font-size:11px;letter-spacing:1px;margin-left:6px">PQCDSM</span></div><span class="logo-tag">GESTÃO VISUAL DA PRODUÇÃO</span></div></div>
+  <div class="hdr-right"><span class="hdr-date" id="hdr-date"></span><span class="hdr-cnt" id="hdr-cnt">—</span></div>
+</div>
+<div class="nav-bar" id="main-nav"></div>
+<div style="background:var(--white);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:sticky;top:52px;z-index:100">
+  <span class="fl" style="margin:0">Data</span>
+  <input id="flt-date" class="fi" type="date" style="width:auto" onchange="onDateChange()"/>
+  <div style="width:1px;height:24px;background:var(--border)"></div>
+  <span class="fl" style="margin:0">Linha</span>
+  <div style="display:flex;gap:4px" id="line-pills">
+    <button class="pill active" onclick="setLine('ALL',this)">Fábrica</button>
+    <button class="pill" onclick="setLine('L1',this)">L1</button>
+    <button class="pill" onclick="setLine('L2',this)">L2</button>
+    <button class="pill" onclick="setLine('L3',this)">L3</button>
+  </div>
+  <div style="width:1px;height:24px;background:var(--border)"></div>
+  <span style="font-size:10px;color:var(--blue);font-family:'DM Mono';cursor:pointer" onclick="loadAll()">↻ atualizar</span>
+</div>
+<div class="content" id="dash-body"></div>
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-hdr"><div><div class="modal-title" id="modal-title"></div><div class="modal-sub" id="modal-sub"></div></div><div style="display:flex;gap:6px"><button onclick="exportModalPDF()" style="background:var(--black);color:var(--yellow);border:none;border-radius:8px;padding:6px 12px;font-size:10px;font-weight:700;cursor:pointer;font-family:'DM Mono'">⬇ PDF</button><button class="modal-close" onclick="closeModal()">×</button></div></div>
+    <div class="modal-tabs" id="modal-tabs">
+      <button class="mtab active" onclick="setMTab('semana',this)">Semana</button>
+      <button class="mtab" onclick="setMTab('mes',this)">Mês</button>
+      <button class="mtab" onclick="setMTab('ano',this)">Ano</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+<div class="footer"><span>ODARA ALFAJORES · PQCDSM v10.0</span><span id="footer-src">inicializando…</span></div>
+<div class="toast" id="toast"></div>
+<script src="shared.js"></script>
+<script>
+let allEntries=[],fltDate=today(),fltLine='ALL';
+let modalPilar=null,modalPeriod='semana',modalCharts=[],dashCharts={};
+let lossUnit='kg',pesagensHoje=[],prodUnit='alf';
+
+function setLine(l,el){fltLine=l;document.querySelectorAll('#line-pills .pill').forEach(p=>p.classList.remove('active'));el.classList.add('active');renderDash();}
+function onDateChange(){fltDate=document.getElementById('flt-date').value||today();loadPesagens();}
+async function loadPesagens(){try{pesagensHoje=await sbQuery('pesagens','select=*&ponto=eq.final&data=eq.'+fltDate);}catch(e){pesagensHoje=[];}renderDash();}
+
+async function loadAll(){
+  document.getElementById('hdr-cnt').textContent='carregando…';
+  try{
+    await sbGetConfig();
+    allEntries=(await sbQuery('pqcdsm','select=*&order=data.desc,created_at.desc&limit=500')).map(norm);
+    pesagensHoje=await sbQuery('pesagens','select=*&ponto=eq.final&data=eq.'+fltDate);
+    const tc=activeEntries(allEntries).filter(e=>e.data===today()).length;
+    document.getElementById('hdr-cnt').textContent=tc+' registro'+(tc!==1?'s':'')+' hoje';
+    document.getElementById('footer-src').textContent='Supabase · '+allEntries.length+' reg';
+  }catch(err){allEntries=[];document.getElementById('hdr-cnt').textContent='erro';showToast('\u274c '+err.message,'err');}
+  renderDash();
+}
+
+function calcSobrepeso(flt){
+  let tot=0;
+  const lines=fltLine==='ALL'?['L1','L2','L3']:[fltLine];
+  lines.forEach(ln=>{
+    const lnP=pesagensHoje.filter(p=>p.linha===ln);if(!lnP.length)return;
+    const bySku={};
+    lnP.forEach(p=>{const k=p.sku+'||'+p.sku_gram;if(!bySku[k])bySku[k]={gram:+p.sku_gram,weights:[]};[p.p1,p.p2,p.p3,p.p4,p.p5].filter(v=>v!=null).forEach(v=>bySku[k].weights.push(v));});
+    Object.values(bySku).forEach(sk=>{
+      if(!sk.weights.length)return;
+      const mean=sk.weights.reduce((a,b)=>a+b,0)/sk.weights.length;
+      const overPct=mean>sk.gram?(mean-sk.gram)/sk.gram:0;
+      const lnE=flt.filter(e=>e.linha===ln);
+      const totalAlf=lnE.reduce((s,e)=>s+(e.realUnid||0),0);
+      tot+=(overPct*totalAlf*sk.gram)/1000;
+    });
+  });
+  return +tot.toFixed(2);
+}
+
+function calcOEE(flt,linha){
+  const teo=OEE_TEORICO[linha];if(!teo)return null;
+  const lnE=flt.filter(e=>e.linha===linha);if(!lnE.length)return null;
+  const realU=lnE.reduce((s,e)=>s+(e.realUnid||0),0);
+  const manutH=lnE.reduce((s,e)=>s+(e.paradaManutMin||0),0)/60;
+  // Check if T2 exists for this line — adds 6.8h líquidas
+  const hasT2=lnE.some(e=>e.turno==='T2');
+  const baseH=teo.horasLiqT1+(hasT2?teo.horasLiqT2:0);
+  const availH=Math.max(baseH-manutH,0.1);
+  const teoMax=teo.velNominal*availH;
+  const oee=teoMax>0?(realU/teoMax)*100:0;
+  return{oee:+oee.toFixed(1),real:realU,teoMax:Math.round(teoMax),availH:+availH.toFixed(1),manutH:+manutH.toFixed(1),velNom:teo.velNominal,hasT2};
+}
+
+function calcProductivity(flt,linha){
+  const lnE=linha==='ALL'?flt:flt.filter(e=>e.linha===linha);if(!lnE.length)return null;
+  const totalAlf=lnE.reduce((s,e)=>s+(e.realUnid||0),0);
+  const totalPres=lnE.reduce((s,e)=>s+(e.presentes||0),0);if(!totalPres)return null;
+  const teo=OEE_TEORICO[linha]||{horasLiqT1:6.8,horasLiqT2:6.8};
+  const hasT2=lnE.some(e=>e.turno==='T2');
+  const hLiq=teo.horasLiqT1+(hasT2?teo.horasLiqT2:0);
+  const alfPH=totalAlf/(totalPres*hLiq);
+  let totalKg=0;
+  lnE.forEach(e=>{const sp=e.skusProd&&e.skusProd.length?e.skusProd:[{real:e.realUnid,gram:e.skuGram}];sp.forEach(s=>{totalKg+=(s.real||0)*(s.gram||0)/1000;});});
+  if(totalKg===0)totalKg=totalAlf*0.05;
+  return{alfPH:+alfPH.toFixed(1),kgPH:+(totalKg/(totalPres*hLiq)).toFixed(2),totalAlf,totalKg:+totalKg.toFixed(1),pres:totalPres,hLiq,hasT2};
+}
+
+function renderDash(){
+  fltDate=document.getElementById('flt-date').value||today();
+  document.getElementById('hdr-date').textContent=new Date(fltDate+'T12:00').toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  const filtered=activeEntries(allEntries).filter(e=>e.data===fltDate);
+  const flt=fltLine==='ALL'?filtered:filtered.filter(e=>e.linha===fltLine);
+  if(!flt.length){document.getElementById('dash-body').innerHTML='<div class="empty" style="margin-top:20px"><div style="font-size:36px;margin-bottom:10px">\ud83d\udccb</div><div style="font-weight:700;margin-bottom:4px">Nenhum registro em '+new Date(fltDate+'T12:00').toLocaleDateString('pt-BR')+'</div><a href="entrada.html" style="display:inline-block;margin-top:14px;background:var(--yellow);border-radius:20px;padding:9px 20px;font-weight:700;font-size:12px;color:var(--black)">Abrir entrada \u2192</a></div>';return;}
+  let h='';
+  const P_u=avg(flt,e=>e.metaUnid>0?pct(e.realUnid,e.metaUnid):null),P_c=avg(flt,e=>e.metaCarr>0?pct(e.realCarr,e.metaCarr):null),P=P_u!==null?P_u:P_c;
+  const Q=flt.reduce((s,e)=>s+totalNCs(e),0),S=flt.reduce((s,e)=>s+totalIncs(e),0);
+  const M=avg(flt,e=>e.totalColab>0?pct(e.presentes,e.totalColab):null);
+  const padStats=(()=>{let ok=0,dl=0,dg=0,tot=0;flt.forEach(e=>{const p=e.padroes||{};Object.values(p).forEach(v=>{tot++;if(v==='c')ok++;else if(v==='dl')dl++;else if(v==='dg')dg++;});});return{ok,dl,dg,tot,pct:tot?pct(ok,tot):null};})();
+  const pVarr=+flt.reduce((s,e)=>s+(e.perdaVarreduraKg||0),0).toFixed(1);
+  const pBiscQ=+flt.reduce((s,e)=>s+(e.perdaBiscoitoKg||0)+(e.perdaQuebraKg||0),0).toFixed(1);
+  const sobr=calcSobrepeso(flt);
+  const pBopp=+flt.reduce((s,e)=>s+(e.perdaBoppKg||0),0).toFixed(1);
+  const perdaTotal=+(pVarr+pBiscQ+sobr).toFixed(1);
+  const Ckg=+flt.reduce((s,e)=>s+totalPerdasKg(e),0).toFixed(1);
+  const Crs=+flt.reduce((s,e)=>s+perdasRS(e),0).toFixed(0);
+  const hasManut=flt.some(e=>e.paradaManut);
+  const totalManutMin=flt.reduce((s,e)=>s+(e.paradaManutMin||0),0);
+
+  // Hero
+  h+='<div class="dash-hero"><div class="hero-date">'+new Date(fltDate+'T12:00').toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'}).toUpperCase()+'</div>';
+  h+='<div class="hero-sub">'+(fltLine==='ALL'?'F\u00c1BRICA \u2014 TODAS AS LINHAS':'LINHA '+fltLine.replace('L',''))+'</div>';
+  h+='<div class="hero-badges"><span class="hero-badge live">\u25cf '+flt.length+' reg</span>';
+  if(hasManut)h+='<span class="hero-badge warn">\ud83d\udd27 manut: '+totalManutMin+'min</span>';
+  if(S>0)h+='<span class="hero-badge err">\u26a0 '+S+' seg</span>';
+  h+='</div></div>';
+
+  // KPIs
+  h+='<div class="section-lbl">PQCDSM</div><div class="kpi-grid">';
+  h+=KC('P','Produ\u00e7\u00e3o',P,'%','meta: '+METAS.P+'%',kpiColor('P',P),'#2563EB');
+  h+=KC('Q','Qualidade',Q,' NCs','meta: \u2264'+METAS.Q,kpiColor('Q',Q),'#D97706');
+  h+=KC('C','Perdas',perdaTotal,' kg','varr+bisc+sobr',perdaTotal>50?'#CC2929':perdaTotal>20?'#C2410C':'#15803D','#DC2626');
+  h+=KC('S','Seguran\u00e7a',S,' ev','meta: '+METAS.S,kpiColor('S',S),'#7C3AED');
+  h+=KC('M','Moral',M,'%','meta: '+METAS.M+'%',kpiColor('M',M),'#EA580C');
+  h+=KC('PAD','Padr\u00f5es',padStats.pct,'%',padStats.dl+' leves \u00b7 '+padStats.dg+' graves',kpiColor('PAD',padStats.pct),'#0369A1');
+  h+='</div>';
+  h+='<div style="display:flex;justify-content:flex-end;margin:-6px 0 8px"><div class="toggle-row"><button class="toggle-btn '+(lossUnit==='kg'?'active':'')+'" onclick="lossUnit=\'kg\';renderDash()">kg</button><button class="toggle-btn '+(lossUnit==='rs'?'active':'')+'" onclick="lossUnit=\'rs\';renderDash()">R$</button></div></div>';
+
+  // OEE
+  const lines=fltLine==='ALL'?['L1','L2','L3']:[fltLine];
+  const oeeR=[];lines.forEach(ln=>{const o=calcOEE(flt,ln);if(o)oeeR.push({ln,...o});});
+  if(oeeR.length){
+    h+='<div class="section-lbl">OEE APROXIMADO DO DIA</div><div class="oee-strip">';
+    oeeR.forEach(o=>{
+      const meta=TARGETS_OEE[o.ln]||60;
+      const col=o.oee>=meta?'var(--green)':o.oee>=meta*0.7?'var(--orange)':'var(--red)';
+      h+='<div class="oee-card"><div class="oee-hdr"><span class="oee-lbl">'+o.ln+'</span>';
+      if(o.manutH>0)h+='<span class="manut-badge">\ud83d\udd27 '+o.manutH+'h</span>';
+      h+='</div><div class="oee-val" style="color:'+col+'">'+o.oee+'%</div>';
+      h+='<div class="oee-sub">Real: '+o.real.toLocaleString('pt-BR')+' \u00b7 Te\u00f3rico: '+o.teoMax.toLocaleString('pt-BR')+' \u00b7 meta: '+meta+'%</div>';
+      h+='<div class="oee-sub">Vel.nom: '+o.velNom.toLocaleString('pt-BR')+' alf/h \u00b7 Disp: '+o.availH+'h'+(o.hasT2?' \u00b7 <strong style="color:var(--blue)">+T2</strong>':'')+'</div>';
+      h+='<div class="oee-bar"><div class="oee-bar-fill" style="width:'+Math.min(o.oee,100)+'%;background:'+col+'"></div></div></div>';
+    });
+    if(oeeR.length>1){
+      const tR=oeeR.reduce((s,o)=>s+o.real,0),tT=oeeR.reduce((s,o)=>s+o.teoMax,0);
+      const oG=tT>0?+((tR/tT)*100).toFixed(1):0;
+      const metaF=TARGETS_OEE.fabrica||60;
+      const col=oG>=metaF?'var(--green)':oG>=metaF*0.7?'var(--orange)':'var(--red)';
+      h+='<div class="oee-card" style="border-color:var(--yellow)"><div class="oee-hdr"><span class="oee-lbl">F\u00c1BRICA</span></div>';
+      h+='<div class="oee-val" style="color:'+col+'">'+oG+'%</div>';
+      h+='<div class="oee-sub">'+tR.toLocaleString('pt-BR')+' / '+tT.toLocaleString('pt-BR')+' \u00b7 meta: '+metaF+'%</div>';
+      h+='<div class="oee-bar"><div class="oee-bar-fill" style="width:'+Math.min(oG,100)+'%;background:'+col+'"></div></div></div>';
+    }
+    h+='</div>';
+  }
+
+  // Productivity
+  const prodR=[];lines.forEach(ln=>{const p=calcProductivity(flt,ln);if(p)prodR.push({ln,...p});});
+  if(prodR.length){
+    h+='<div class="section-lbl" style="display:flex;justify-content:space-between;align-items:center">PRODUTIVIDADE';
+    h+='<div class="toggle-row" style="margin-left:auto"><button class="toggle-btn '+(prodUnit==='alf'?'active':'')+'" onclick="prodUnit=\'alf\';renderDash()">alf/p\u00b7h</button><button class="toggle-btn '+(prodUnit==='kg'?'active':'')+'" onclick="prodUnit=\'kg\';renderDash()">kg/p\u00b7h</button></div></div>';
+    h+='<div class="prod-strip">';
+    prodR.forEach(p=>{
+      const val=prodUnit==='alf'?p.alfPH:p.kgPH,unit=prodUnit==='alf'?'alf/p\u00b7h':'kg/p\u00b7h';
+      const tgt=TARGETS_PROD[p.ln]||{alfPH:0,kgPH:0};
+      const meta=prodUnit==='alf'?tgt.alfPH:tgt.kgPH;
+      const col=meta&&val>=meta?'var(--green)':meta&&val>=meta*0.85?'var(--orange)':meta?'var(--red)':'var(--blue)';
+      h+='<div class="prod-card"><div class="prod-lbl">'+p.ln+'</div><div class="prod-val" style="color:'+col+'">'+val+'</div><div class="prod-lbl">'+unit+'</div>';
+      h+='<div class="prod-sub">'+p.pres+' pessoas \u00b7 '+p.totalAlf.toLocaleString('pt-BR')+' alf'+(meta?' \u00b7 meta: '+meta:'')+'</div></div>';
+    });
+    h+='</div>';
+  }
+
+  // Losses
+  // Calculate total kg produced (dosado + coberto consolidated by SKU)
+  let totalKgProd=0;
+  flt.forEach(e=>{
+    const sp=e.skusProd&&e.skusProd.length?e.skusProd:[{real:e.realUnid,gram:e.skuGram}];
+    sp.forEach(s=>{totalKgProd+=(s.real||0)*(s.gram||0)/1000;});
+  });
+  totalKgProd=+totalKgProd.toFixed(1);
+  // MP loss % = sum(kg perdas) / sum(kg produzidos)
+  const totalMpKg=+(pVarr+pBiscQ+sobr+(+flt.reduce((s,e)=>s+(e.perdaDlKg||0)+(e.perdaRejeitoDosKg||0),0).toFixed(1))).toFixed(1);
+  const perdaMpPct=totalKgProd>0?+((totalMpKg/totalKgProd)*100).toFixed(2):0;
+  // BOPP loss % = perda_bopp / (peso_flowpack * unidades embaladas)
+  let totalUnEmb=0,totalFlowpackKg=0;
+  flt.forEach(e=>{
+    const sp=e.skusProd&&e.skusProd.length?e.skusProd:[{real:e.realUnid,gram:e.skuGram}];
+    sp.forEach(s=>{
+      const real=s.real||0;totalUnEmb+=real;
+      // Determine product type from gram or tipoProduto
+      const tp=e.tipoProduto||(s.gram>=60?'classico':s.gram>=40?'crocante':s.gram<=25?'mini':'zero');
+      const fpW=FLOWPACK_PESO[tp]||0.5;
+      totalFlowpackKg+=(real*fpW)/1000;
+    });
+  });
+  totalFlowpackKg=+totalFlowpackKg.toFixed(2);
+  const perdaBoppPct=totalFlowpackKg>0?+((pBopp/totalFlowpackKg)*100).toFixed(2):0;
+
+  h+='<div class="section-lbl">PERDAS DO DIA</div><div class="loss-card">';
+  h+='<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><div class="chart-title" style="margin:0">Perda Total: '+perdaTotal+' kg</div>';
+  h+='<span style="font-size:9px;color:var(--muted);font-family:\'DM Mono\'">varredura + biscoito quebrado + sobrepeso</span></div>';
+  h+='<div class="loss-grid">';
+  h+='<div class="loss-item"><div class="loss-val" style="color:var(--orange)">'+pVarr+'</div><div class="loss-lbl">Varredura</div></div>';
+  h+='<div class="loss-item"><div class="loss-val" style="color:var(--red)">'+pBiscQ+'</div><div class="loss-lbl">Biscoito Quebrado</div></div>';
+  h+='<div class="loss-item"><div class="loss-val" style="color:var(--purple)">'+sobr+'</div><div class="loss-lbl">Sobrepeso</div></div>';
+  h+='</div>';
+
+  // % perdas summary cards
+  h+='<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;font-family:\'DM Mono\';margin-bottom:8px">Perdas em %</div>';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
+  const mpPctCol=perdaMpPct<=2?'var(--green)':perdaMpPct<=5?'var(--orange)':'var(--red)';
+  const boppPctCol=perdaBoppPct<=5?'var(--green)':perdaBoppPct<=10?'var(--orange)':'var(--red)';
+  h+='<div class="loss-item" style="text-align:left;padding:12px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span class="loss-lbl">Matéria-Prima</span><span style="font-family:\'Bebas Neue\';font-size:24px;color:'+mpPctCol+'">'+perdaMpPct+'%</span></div><div style="font-size:9px;color:var(--muted);font-family:\'DM Mono\';margin-top:4px">'+totalMpKg+'kg perdas / '+totalKgProd+'kg produzidos</div></div>';
+  h+='<div class="loss-item" style="text-align:left;padding:12px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span class="loss-lbl">Embalagem (BOPP)</span><span style="font-family:\'Bebas Neue\';font-size:24px;color:'+boppPctCol+'">'+perdaBoppPct+'%</span></div><div style="font-size:9px;color:var(--muted);font-family:\'DM Mono\';margin-top:4px">'+pBopp+'kg perda / '+totalFlowpackKg+'kg flowpacks</div></div>';
+  h+='</div></div>';
+
+  const pDl=+flt.reduce((s,e)=>s+(e.perdaDlKg||0),0).toFixed(1),pRej=+flt.reduce((s,e)=>s+(e.perdaRejeitoDosKg||0),0).toFixed(1);
+  const pDosU=+flt.reduce((s,e)=>s+(e.perdaDosadoUn||0),0).toFixed(0),pCobU=+flt.reduce((s,e)=>s+(e.perdaCobertoUn||0),0).toFixed(0),pChoU=+flt.reduce((s,e)=>s+(e.perdaChocolateUn||0),0).toFixed(0);
+  h+='<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;font-family:\'DM Mono\';margin-bottom:8px">Outras Perdas</div>';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div>';
+  [['Doce de leite',pDl,'kg'],['Rejeito dosado',pRej,'kg'],['BOPP (embalagem)',pBopp,'kg']].forEach(([l,v,u])=>{h+='<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:11px;font-family:\'DM Mono\'"><span style="color:var(--muted)">'+l+'</span><span style="font-weight:700'+(v>0?';color:var(--red)':'')+'">'+v+u+'</span></div>';});
+  h+='</div><div>';
+  [['Dosado',pDosU,'un'],['Coberto',pCobU,'un'],['Chocolate',pChoU,'un']].forEach(([l,v,u])=>{h+='<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:11px;font-family:\'DM Mono\'"><span style="color:var(--muted)">'+l+'</span><span style="font-weight:700'+(+v>0?';color:var(--red)':'')+'">'+v+u+'</span></div>';});
+  h+='</div></div>';
+  const lossC=flt.filter(e=>e.comentarioPerdas).map(e=>e.supervisor+' ('+e.linha+'): '+e.comentarioPerdas);
+  lossC.forEach(c=>{h+='<div class="loss-comment">\ud83d\udcac '+c+'</div>';});
+  h+='</div>';
+
+  // SKU Summary
+  const skuMap={};flt.forEach(e=>{const sp=e.skusProd&&e.skusProd.length?e.skusProd:[{sku:e.sku,desc:e.skuDesc,meta:e.metaUnid,real:e.realUnid}];sp.forEach(s=>{if(!s.sku)return;if(!skuMap[s.sku])skuMap[s.sku]={desc:s.desc||'',meta:0,real:0};skuMap[s.sku].meta+=(s.meta||0);skuMap[s.sku].real+=(s.real||0);});});
+  const skuE=Object.entries(skuMap);
+  if(skuE.length){
+    h+='<div class="sku-summary"><div class="chart-title">\ud83d\udce6 SKUs Produzidos</div><table class="sku-tbl"><thead><tr><th>SKU</th><th>Descri\u00e7\u00e3o</th><th style="text-align:right">Meta</th><th style="text-align:right">Real</th><th style="text-align:right">%</th></tr></thead><tbody>';
+    skuE.forEach(([cod,v])=>{const p=v.meta>0?pct(v.real,v.meta):null,pc=p===null?'var(--muted)':p>=95?'var(--green)':p>=80?'var(--orange)':'var(--red)';h+='<tr><td style="font-weight:700">'+cod+'</td><td style="font-size:10px;color:var(--muted)">'+v.desc.slice(0,30)+'</td><td style="text-align:right">'+v.meta+'</td><td style="text-align:right;font-weight:700">'+v.real+'</td><td style="text-align:right;color:'+pc+';font-weight:700">'+(p!==null?p+'%':'\u2014')+'</td></tr>';});
+    h+='</tbody></table></div>';
+  }
+
+  // Weight status
+  const wBySku={};pesagensHoje.filter(p=>fltLine==='ALL'||p.linha===fltLine).forEach(p=>{const k=p.sku+'||'+p.sku_gram;if(!wBySku[k])wBySku[k]={sku:p.sku,desc:p.sku_desc||'',gram:+p.sku_gram,weights:[]};[p.p1,p.p2,p.p3,p.p4,p.p5].filter(v=>v!=null).forEach(v=>wBySku[k].weights.push(v));});
+  const wE=Object.values(wBySku);
+  if(wE.length){
+    h+='<div class="section-lbl">Controle de Peso</div><div class="an-summary">';
+    wE.forEach(w=>{
+      const ev=w.weights.length>=5?inmetroEval(w.weights,w.gram):{status:'pending'};
+      const col=ev.status==='approved'?'green':ev.status==='rejected'?'red':'orange';
+      const icon=ev.status==='approved'?'\u2705':ev.status==='rejected'?'\u274c':'\u23f3';
+      const overPct=ev.mean&&ev.mean>w.gram?((ev.mean-w.gram)/w.gram*100).toFixed(1):null;
+      h+='<div class="an-card '+col+'"><div class="an-lbl">'+icon+' '+w.sku+'</div><div class="an-val">'+(ev.mean?ev.mean+'g':'\u2014')+'</div><div class="an-sub">'+w.weights.length+' pesagens \u00b7 Qn='+w.gram+'g'+(ev.sd?' \u00b7 \u03c3='+ev.sd+'g':'')+(overPct?' \u00b7 <strong style="color:var(--purple)">+'+overPct+'%</strong>':'')+'</div></div>';
+    });
+    h+='</div>';
+  }
+
+  // Deviations
+  const devs=padDeviations(flt);
+  if(devs.length){
+    h+='<div class="dev-box"><div class="chart-title" style="color:#92400E">\u26a0\ufe0f Desvios de Padr\u00e3o ('+devs.length+')</div>';
+    devs.forEach(d=>{h+='<div class="dev-item"><div class="dev-dot '+(d.status==='dg'?'grave':'leve')+'"></div><span style="flex:1">'+d.item+(d.comment?' \u2014 <em style="color:var(--muted)">'+d.comment+'</em>':'')+'</span></div>';});
+    h+='</div>';
+  }
+
+  // Charts
+  h+='<div class="chart-grid"><div class="chart-card"><div class="chart-title">\ud83d\udce6 Produ\u00e7\u00e3o (14d)</div><canvas id="c-prod"></canvas></div><div class="chart-card"><div class="chart-title">\ud83d\udd34 NCs/dia</div><canvas id="c-ncs"></canvas></div></div>';
+  h+='<div class="chart-card" style="margin-bottom:14px"><div class="chart-title">\ud83d\udcc9 Perdas \u2014 Tend\u00eancia (14d)</div><canvas id="c-loss"></canvas></div>';
+
+  // Insights
+  h+='<div class="daily-box"><div class="daily-title">\ud83d\udca1 INSIGHTS \u2014 REUNI\u00c3O DI\u00c1RIA</div>';
+  const ins=[];
+  if(P!==null&&P>=METAS.P)ins.push({t:'Produ\u00e7\u00e3o em '+P.toFixed(1)+'%. Meta atingida!',c:'green'});
+  else if(P!==null)ins.push({t:'Produ\u00e7\u00e3o em '+P.toFixed(1)+'% (meta: '+METAS.P+'%).',c:P>=METAS.P*0.85?'yellow':'red'});
+  if(Q>METAS.Q)ins.push({t:Q+' NCs (meta: \u2264'+METAS.Q+'). Verificar modos.',c:'red'});
+  else if(Q===0)ins.push({t:'Zero NCs.',c:'green'});
+  if(S>0)ins.push({t:S+' evento(s) de seguran\u00e7a.',c:'red'});else ins.push({t:'Zero eventos de seguran\u00e7a.',c:'green'});
+  if(perdaTotal>50)ins.push({t:'Perdas: '+perdaTotal+'kg. Investigar.',c:'red'});
+  else if(perdaTotal>20)ins.push({t:'Perdas: '+perdaTotal+'kg. Acompanhar.',c:'yellow'});
+  if(sobr>5)ins.push({t:'Sobrepeso: '+sobr+'kg. Ajustar dosagem.',c:'red'});
+  if(pBopp>0)ins.push({t:'Perda BOPP: '+pBopp+'kg.',c:'yellow'});
+  if(hasManut)ins.push({t:'Parada manut: '+totalManutMin+'min.',c:'yellow'});
+  if(padStats.dg>0)ins.push({t:padStats.dg+' desvio(s) grave(s).',c:'red'});
+  oeeR.forEach(o=>{if(o.oee<40)ins.push({t:'OEE '+o.ln+' cr\u00edtico: '+o.oee+'%.',c:'red'});else if(o.oee<60)ins.push({t:'OEE '+o.ln+': '+o.oee+'%.',c:'yellow'});});
+  flt.forEach(e=>{if(e.comentarioP)ins.push({t:'\ud83d\udcdd '+e.supervisor+': '+e.comentarioP,c:'blue'});if(e.comentarioQ)ins.push({t:'\ud83d\udcdd '+e.supervisor+': '+e.comentarioQ,c:'blue'});});
+  if(!ins.length)ins.push({t:'Dados insuficientes.',c:'yellow'});
+  ins.forEach(i=>{h+='<div class="daily-item '+i.c+'">'+i.t+'</div>';});
+  h+='</div>';
+
+  document.getElementById('dash-body').innerHTML=h;
+
+  // Charts render
+  Object.values(dashCharts).forEach(c=>{try{c.destroy()}catch(e){}});dashCharts={};
+  const allAct=activeEntries(allEntries);
+  const td=fltLine==='ALL'?[...allAct].reverse().slice(-14):[...allAct].filter(e=>e.linha===fltLine).reverse().slice(-14);
+  const lb=td.map(e=>e.data.slice(5));
+  const cf={family:'DM Mono',size:8};
+  const cp=document.getElementById('c-prod'),cn=document.getElementById('c-ncs'),cl=document.getElementById('c-loss');
+  if(cp)dashCharts.p=new Chart(cp,{type:'bar',data:{labels:lb,datasets:[{label:'Meta',data:td.map(e=>e.metaUnid||0),backgroundColor:'#E5E5E0',borderRadius:3},{label:'Real',data:td.map(e=>e.realUnid||0),backgroundColor:'#FFB81D',borderRadius:3}]},options:{plugins:{legend:{labels:{font:cf}}},scales:{x:{ticks:{font:cf}},y:{ticks:{font:cf}}},maintainAspectRatio:true}});
+  if(cn)dashCharts.n=new Chart(cn,{type:'bar',data:{labels:lb,datasets:[{label:'NCs',data:td.map(e=>totalNCs(e)),backgroundColor:'#EE273766',borderColor:'#EE2737',borderWidth:1,borderRadius:3}]},options:{plugins:{legend:{labels:{font:cf}}},scales:{x:{ticks:{font:cf}},y:{min:0,ticks:{font:cf}}},maintainAspectRatio:true}});
+  if(cl){
+    const grp={};td.forEach(e=>{if(!grp[e.data])grp[e.data]={v:0,b:0,d:0,bp:0};grp[e.data].v+=(e.perdaVarreduraKg||0);grp[e.data].b+=(e.perdaBiscoitoKg||0)+(e.perdaQuebraKg||0);grp[e.data].d+=(e.perdaDlKg||0);grp[e.data].bp+=(e.perdaBoppKg||0);});
+    const ds=Object.keys(grp).sort(),lbL=ds.map(d=>d.slice(5));
+    dashCharts.l=new Chart(cl,{type:'bar',data:{labels:lbL,datasets:[
+      {label:'Varredura',data:ds.map(d=>+grp[d].v.toFixed(1)),backgroundColor:'#F59E0BAA',borderRadius:2},
+      {label:'Biscoito',data:ds.map(d=>+grp[d].b.toFixed(1)),backgroundColor:'#DC2626AA',borderRadius:2},
+      {label:'DL',data:ds.map(d=>+grp[d].d.toFixed(1)),backgroundColor:'#7C3AEDAA',borderRadius:2},
+      {label:'BOPP',data:ds.map(d=>+grp[d].bp.toFixed(1)),backgroundColor:'#2563EBAA',borderRadius:2}
+    ]},options:{plugins:{legend:{labels:{font:cf}}},scales:{x:{stacked:true,ticks:{font:cf}},y:{stacked:true,ticks:{font:cf}}},maintainAspectRatio:true}});
+  }
+}
+
+function KC(p,label,val,unit,sub,color,bg){const d=val!==null?(p==='Q'||p==='S'?Math.round(val)+unit:typeof val==='number'?val.toFixed(1)+unit:val+unit):'\u2013';return '<div class="kpi-card" onclick="openModal(\''+p+'\')"><div class="kpi-hdr"><span class="kpi-lbl">'+label+'</span><span class="kpi-bdg" style="background:'+bg+'">'+p+'</span></div><div class="kpi-val" style="color:'+color+'">'+d+'</div><div class="kpi-sub">'+sub+'</div><div class="kpi-drill">\u2197 detalhar</div><div class="kpi-bar" style="background:'+color+'"></div></div>';}
+
+function openModal(p){modalPilar=p;modalPeriod='semana';document.getElementById('modal-title').textContent={P:'Produ\u00e7\u00e3o',Q:'Qualidade',C:'Perdas',S:'Seguran\u00e7a',M:'Moral',PAD:'Padr\u00f5es'}[p];document.getElementById('modal-sub').textContent='Linha: '+(fltLine==='ALL'?'Todas':fltLine);document.querySelectorAll('.mtab').forEach((t,i)=>t.classList.toggle('active',i===0));document.getElementById('modal-tabs').style.display='flex';renderModal();document.getElementById('modal-overlay').classList.add('open');}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');modalCharts.forEach(c=>{try{c.destroy()}catch(e){}});modalCharts=[];}
+function setMTab(p,el){modalPeriod=p;document.querySelectorAll('.mtab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderModal();}
+function getMD(){const ref=new Date(fltDate+'T12:00'),cut=new Date(ref);if(modalPeriod==='semana')cut.setDate(cut.getDate()-7);else if(modalPeriod==='mes')cut.setDate(cut.getDate()-30);else cut.setDate(cut.getDate()-365);let d=activeEntries(allEntries).filter(e=>{const dt=new Date(e.data+'T12:00');return dt>=cut&&dt<=ref;});if(fltLine!=='ALL')d=d.filter(e=>e.linha===fltLine);return d.reverse();}
+
+function renderModal(){
+  modalCharts.forEach(c=>{try{c.destroy()}catch(e){}});modalCharts=[];
+  const data=getMD(),body=document.getElementById('modal-body');
+  if(!data.length){body.innerHTML='<div style="text-align:center;padding:32px;color:var(--muted);font-size:12px;font-family:\'DM Mono\'">Nenhum registro</div>';return;}
+  const grouped={};data.forEach(e=>{if(!grouped[e.data])grouped[e.data]=[];grouped[e.data].push(e);});
+  const dates=Object.keys(grouped),labels=dates.map(d=>new Date(d+'T12:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short'}));
+  let html='';const mf={family:'DM Mono',size:9};
+  if(modalPilar==='P'){
+    const vals=Object.values(grouped).map(es=>avg(es,e=>e.metaUnid>0?pct(e.realUnid,e.metaUnid):null));
+    html='<canvas id="mc1" style="max-height:300px"></canvas>';body.innerHTML=html;
+    modalCharts.push(new Chart(document.getElementById('mc1'),{type:'bar',data:{labels,datasets:[{label:'% Atingimento',data:vals,backgroundColor:'#2563EB66',borderColor:'#2563EB',borderWidth:1,borderRadius:4},{type:'line',label:'Meta',data:Array(vals.length).fill(METAS.P),borderColor:'#15803D',borderWidth:1.5,borderDash:[5,3],pointRadius:0,fill:false}]},options:{plugins:{legend:{labels:{font:mf}}},scales:{x:{ticks:{font:mf}},y:{ticks:{font:mf}}},maintainAspectRatio:true}}));
+  }else if(modalPilar==='M'){
+    const vals=Object.values(grouped).map(es=>avg(es,e=>e.totalColab>0?pct(e.presentes,e.totalColab):null));
+    html='<canvas id="mc1" style="max-height:300px"></canvas>';body.innerHTML=html;
+    modalCharts.push(new Chart(document.getElementById('mc1'),{type:'bar',data:{labels,datasets:[{label:'% Presen\u00e7a',data:vals,backgroundColor:'#EA580C66',borderColor:'#EA580C',borderWidth:1,borderRadius:4},{type:'line',label:'Meta',data:Array(vals.length).fill(METAS.M),borderColor:'#15803D',borderWidth:1.5,borderDash:[5,3],pointRadius:0,fill:false}]},options:{plugins:{legend:{labels:{font:mf}}},scales:{x:{ticks:{font:mf}},y:{ticks:{font:mf}}},maintainAspectRatio:true}}));
+  }else if(modalPilar==='PAD'){
+    const vals=Object.values(grouped).map(es=>{let ok=0,tot=0;es.forEach(e=>{const p=e.padroes||{};Object.values(p).forEach(v=>{tot++;if(v==='c')ok++;});});return tot?pct(ok,tot):null;});
+    html='<canvas id="mc1" style="max-height:300px"></canvas>';body.innerHTML=html;
+    modalCharts.push(new Chart(document.getElementById('mc1'),{type:'bar',data:{labels,datasets:[{label:'% Conformidade',data:vals,backgroundColor:'#0369A166',borderColor:'#0369A1',borderWidth:1,borderRadius:4}]},options:{plugins:{legend:{labels:{font:mf}}},scales:{x:{ticks:{font:mf}},y:{ticks:{font:mf}}},maintainAspectRatio:true}}));
+  }else if(modalPilar==='Q'){
+    const allModes={};data.forEach(e=>(e.ncs||[]).forEach(n=>{allModes[n.mode||n.cat||'Outros']=true;}));
+    const mList=Object.keys(allModes),pal=['#D97706','#DC2626','#7C3AED','#2563EB','#059669','#C2410C','#EC4899','#6366F1','#14B8A6','#F59E0B'];
+    const ds=mList.map((m,i)=>({label:m.length>22?m.slice(0,22)+'\u2026':m,data:dates.map(d=>grouped[d].reduce((s,e)=>(e.ncs||[]).reduce((ss,n)=>ss+((n.mode||n.cat||'Outros')===m?(n.qty||0):0),s),0)),backgroundColor:pal[i%pal.length]+'AA',borderRadius:2}));
+    html='<canvas id="mc1" style="max-height:300px"></canvas><div style="margin-top:16px" id="mc-pareto"></div>';body.innerHTML=html;
+    modalCharts.push(new Chart(document.getElementById('mc1'),{type:'bar',data:{labels,datasets:ds},options:{plugins:{legend:{labels:{font:{family:'DM Mono',size:8}},maxHeight:60}},scales:{x:{stacked:true,ticks:{font:mf}},y:{stacked:true,ticks:{font:mf}}},maintainAspectRatio:true}}));
+    const pareto=ncPareto(data),total=pareto.reduce((s,[,v])=>s+v,0);
+    if(pareto.length){const mx=pareto[0][1];document.getElementById('mc-pareto').innerHTML='<div class="chart-title">Pareto \u2014 '+total+' NCs</div>'+pareto.slice(0,8).map(([cat,cnt])=>'<div class="pareto-row"><div class="pareto-lbl" style="font-size:10px">'+cat+'</div><div class="pareto-bar-track" style="height:20px"><div class="pareto-bar-fill" style="width:'+(cnt/mx*100).toFixed(0)+'%;background:#D97706"></div></div><div class="pareto-cnt" style="color:#D97706">'+cnt+'</div></div>').join('');}
+  }else if(modalPilar==='S'){
+    const ds=BYRD_LEVELS.map(lv=>({label:lv,data:dates.map(d=>grouped[d].reduce((s,e)=>(e.incidentes||[]).reduce((ss,i)=>ss+(i.camada===lv?1:0),s),0)),backgroundColor:BYRD_COLORS[lv]+'AA',borderRadius:2}));
+    html='<canvas id="mc1" style="max-height:300px"></canvas><div style="margin-top:16px" id="mc-pareto"></div>';body.innerHTML=html;
+    modalCharts.push(new Chart(document.getElementById('mc1'),{type:'bar',data:{labels,datasets:ds},options:{plugins:{legend:{labels:{font:mf}}},scales:{x:{stacked:true,ticks:{font:mf}},y:{stacked:true,beginAtZero:true,ticks:{font:mf}}},maintainAspectRatio:true}}));
+    const modeMap={};data.forEach(e=>(e.incidentes||[]).forEach(i=>{if(i.camada&&i.camada!=='nenhum')modeMap[i.modo||i.camada]=(modeMap[i.modo||i.camada]||0)+1;}));
+    const pareto=Object.entries(modeMap).sort((a,b)=>b[1]-a[1]),total=pareto.reduce((s,[,v])=>s+v,0);
+    if(pareto.length){const mx=pareto[0][1];document.getElementById('mc-pareto').innerHTML='<div class="chart-title">Pareto \u2014 '+total+' eventos</div>'+pareto.slice(0,8).map(([cat,cnt])=>'<div class="pareto-row"><div class="pareto-lbl" style="font-size:10px">'+cat+'</div><div class="pareto-bar-track" style="height:20px"><div class="pareto-bar-fill" style="width:'+(cnt/mx*100).toFixed(0)+'%;background:#7C3AED"></div></div><div class="pareto-cnt" style="color:#7C3AED">'+cnt+'</div></div>').join('');}
+  }else if(modalPilar==='C'){
+    const types=[['Varredura','perdaVarreduraKg','#F59E0B'],['Biscoito','perdaBiscoitoKg','#C2410C'],['Quebra','perdaQuebraKg','#6B7280'],['DL','perdaDlKg','#7C3AED'],['Rejeito','perdaRejeitoDosKg','#3B82F6'],['BOPP','perdaBoppKg','#14B8A6'],['Dosado (un)','perdaDosadoUn','#EC4899'],['Coberto (un)','perdaCobertoUn','#6366F1']];
+    const ds=types.map(([lbl,key,col])=>({label:lbl,data:dates.map(d=>+grouped[d].reduce((s,e)=>s+(e[key]||0),0).toFixed(1)),backgroundColor:col+'AA',borderRadius:2}));
+    html='<canvas id="mc1" style="max-height:300px"></canvas>';body.innerHTML=html;
+    modalCharts.push(new Chart(document.getElementById('mc1'),{type:'bar',data:{labels,datasets:ds},options:{plugins:{legend:{labels:{font:{family:'DM Mono',size:8}},maxHeight:60}},scales:{x:{stacked:true,ticks:{font:mf}},y:{stacked:true,ticks:{font:mf}}},maintainAspectRatio:true}}));
+  }
+}
+
+function exportModalPDF(){
+  const title=document.getElementById('modal-title').textContent,sub=document.getElementById('modal-sub').textContent;
+  const canvases=document.querySelectorAll('#modal-body canvas');
+  const w=window.open('','_blank','width=900,height=700');
+  w.document.write('<html><head><title>'+title+'</title><style>body{font-family:Arial,sans-serif;padding:30px;color:#111}h1{font-size:18px;margin:0 0 4px}h2{font-size:12px;color:#6B7280;margin:0 0 20px}.chart{margin:16px 0;text-align:center}img{max-width:100%;border:1px solid #eee;border-radius:8px}.footer{margin-top:30px;border-top:2px solid #eee;padding-top:10px;font-size:9px;color:#999;text-align:center}@media print{body{padding:20px}}</style></head><body>');
+  w.document.write('<h1>ODARA \u2014 '+title+'</h1><h2>'+sub+' \u00b7 '+modalPeriod+'</h2>');
+  canvases.forEach(cv=>{try{w.document.write('<div class="chart"><img src="'+cv.toDataURL('image/png')+'"/></div>');}catch(e){}});
+  const pareto=document.getElementById('mc-pareto');if(pareto)w.document.write(pareto.innerHTML);
+  w.document.write('<div class="footer">ODARA ALFAJORES \u00b7 PQCDSM v10 \u00b7 '+new Date().toLocaleString('pt-BR')+'</div></body></html>');
+  w.document.close();setTimeout(()=>w.print(),500);
+}
+
+document.getElementById('flt-date').value=today();
+renderNav('dia');
+loadAll();
+</script>
+</body>
+</html>

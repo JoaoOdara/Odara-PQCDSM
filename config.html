@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Odara · Configurações</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500;700&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="shared.css"/>
+</head>
+<body>
+<div class="hdr"><div class="logo"><div class="logo-bar"></div><div><span class="logo-title">ODARA</span><span class="logo-tag">CONFIGURAÇÕES</span></div></div></div>
+<div class="nav-bar" id="main-nav"></div>
+<div class="content">
+
+  <!-- 1. METAS PQCDSM -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:var(--yellow)"></div><span class="fsec-title">METAS PQCDSM</span></div>
+    <div class="fg">
+      <div><label class="fl">P — Produção (%)</label><input id="m-p" class="fi" type="number" value="95"/></div>
+      <div><label class="fl">Q — NCs máx/dia</label><input id="m-q" class="fi" type="number" value="3"/></div>
+      <div><label class="fl">S — Eventos máx</label><input id="m-s" class="fi" type="number" value="0"/></div>
+      <div><label class="fl">M — Presença (%)</label><input id="m-m" class="fi" type="number" value="95"/></div>
+      <div><label class="fl">PAD — Padrões (%)</label><input id="m-pad" class="fi" type="number" value="90"/></div>
+    </div>
+  </div>
+
+  <!-- 2. METAS DE OEE POR LINHA -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:var(--green)"></div><span class="fsec-title">METAS DE OEE (%)</span></div>
+    <p style="font-size:10px;color:var(--muted);margin-bottom:10px;font-family:'DM Mono'">Meta de Overall Equipment Effectiveness por linha. Cores no painel: ≥ meta (verde), ≥70% da meta (laranja), &lt; 70% (vermelho).</p>
+    <div class="fg4">
+      <div><label class="fl">L1</label><input id="oee-l1" class="fi" type="number" min="0" max="100" value="60"/></div>
+      <div><label class="fl">L2</label><input id="oee-l2" class="fi" type="number" min="0" max="100" value="60"/></div>
+      <div><label class="fl">L3</label><input id="oee-l3" class="fi" type="number" min="0" max="100" value="60"/></div>
+      <div><label class="fl">Fábrica (média)</label><input id="oee-fab" class="fi" type="number" min="0" max="100" value="60"/></div>
+    </div>
+  </div>
+
+  <!-- 3. METAS DE PRODUTIVIDADE -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:var(--blue)"></div><span class="fsec-title">METAS DE PRODUTIVIDADE</span></div>
+    <p style="font-size:10px;color:var(--muted);margin-bottom:10px;font-family:'DM Mono'">Meta de alfajores e kg por pessoa por hora trabalhada (descontado PP).</p>
+    <div class="fg3" style="margin-bottom:6px">
+      <div></div>
+      <div><label class="fl">Alfajor / pessoa·hora</label></div>
+      <div><label class="fl">Kg / pessoa·hora</label></div>
+    </div>
+    <div class="fg3" style="margin-bottom:6px"><div style="font-weight:700;padding-top:8px">L1</div><div><input id="prod-l1-alf" class="fi" type="number" step="1" value="200"/></div><div><input id="prod-l1-kg" class="fi" type="number" step="0.1" value="10"/></div></div>
+    <div class="fg3" style="margin-bottom:6px"><div style="font-weight:700;padding-top:8px">L2</div><div><input id="prod-l2-alf" class="fi" type="number" step="1" value="100"/></div><div><input id="prod-l2-kg" class="fi" type="number" step="0.1" value="5"/></div></div>
+    <div class="fg3" style="margin-bottom:6px"><div style="font-weight:700;padding-top:8px">L3</div><div><input id="prod-l3-alf" class="fi" type="number" step="1" value="150"/></div><div><input id="prod-l3-kg" class="fi" type="number" step="0.1" value="7"/></div></div>
+  </div>
+
+  <!-- 4. CUSTOS -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:var(--red)"></div><span class="fsec-title">CUSTOS DE INSUMO</span></div>
+    <div class="fg">
+      <div><label class="fl">Biscoito (R$/kg)</label><input id="c-bisc" class="fi" type="number" step="0.01" value="15"/></div>
+      <div><label class="fl">Doce de leite (R$/kg)</label><input id="c-dl" class="fi" type="number" step="0.01" value="15"/></div>
+      <div><label class="fl">Chocolate (R$/kg)</label><input id="c-cho" class="fi" type="number" step="0.01" value="25"/></div>
+      <div><label class="fl">Embalagem (R$/un)</label><input id="c-emb" class="fi" type="number" step="0.01" value="0.50"/></div>
+    </div>
+  </div>
+
+  <!-- 5. TARGETS DE PESO PROCESSO -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:var(--teal)"></div><span class="fsec-title">TARGETS DE PESO — PROCESSO</span></div>
+    <p style="font-size:10px;color:var(--muted);margin-bottom:10px;font-family:'DM Mono'">Peso alvo para 3 biscoitos e dosado por tipo de produto (gramas).</p>
+    <div class="fg4"><div><label class="fl">Tipo</label></div><div><label class="fl">Biscoito 3un (g)</label></div><div><label class="fl">Dosado (g)</label></div><div></div></div>
+    <div id="targets-list"></div>
+  </div>
+
+  <!-- 6. PESO FLOWPACK VAZIO -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:var(--purple)"></div><span class="fsec-title">PESO DO FLOWPACK VAZIO (g)</span></div>
+    <p style="font-size:10px;color:var(--muted);margin-bottom:10px;font-family:'DM Mono'">Peso unitário da embalagem sem produto. Usado para calcular % de perda de BOPP = perda_bopp_kg / (peso_flowpack × unidades embaladas).</p>
+    <div class="fg4">
+      <div><label class="fl">Clássico</label><input id="fp-classico" class="fi" type="number" step="0.01" value="0.8"/></div>
+      <div><label class="fl">Mini</label><input id="fp-mini" class="fi" type="number" step="0.01" value="0.4"/></div>
+      <div><label class="fl">Zero</label><input id="fp-zero" class="fi" type="number" step="0.01" value="0.6"/></div>
+      <div><label class="fl">Crocante</label><input id="fp-crocante" class="fi" type="number" step="0.01" value="0.5"/></div>
+    </div>
+  </div>
+
+  <!-- 7. EQUIPE -->
+  <div class="form-section">
+    <div class="fsec-hdr"><div class="fsec-bar" style="background:var(--orange)"></div><span class="fsec-title">EQUIPE — REUNIÃO DIÁRIA DE GESTÃO</span></div>
+    <div class="fg">
+      <div><label class="fl">Qualidade</label><textarea id="eq-qual" class="fi" placeholder="Um nome por linha"></textarea></div>
+      <div><label class="fl">Manutenção</label><textarea id="eq-man" class="fi" placeholder="Um nome por linha"></textarea></div>
+      <div><label class="fl">Produção</label><textarea id="eq-prod" class="fi" placeholder="Um nome por linha"></textarea></div>
+      <div><label class="fl">PCP</label><textarea id="eq-pcp" class="fi" placeholder="Um nome por linha"></textarea></div>
+      <div><label class="fl">Almoxarifado</label><textarea id="eq-alm" class="fi" placeholder="Um nome por linha"></textarea></div>
+    </div>
+  </div>
+
+  <button class="save-btn" onclick="saveConfig()">💾 Salvar Configurações</button>
+</div>
+
+<div class="footer"><span>ODARA · PQCDSM v10 · Config</span><span></span></div>
+<div class="toast" id="toast"></div>
+
+<script src="shared.js"></script>
+<script>
+const TIPOS=['classico','mini','zero','crocante'];
+let configRows=[];
+
+async function loadConfig(){
+  try{
+    configRows=await sbQuery('config','select=*');
+
+    // Metas PQCDSM
+    const metas=configRows.find(r=>r.chave==='metas');
+    if(metas&&metas.valor){
+      document.getElementById('m-p').value=metas.valor.P||95;
+      document.getElementById('m-q').value=metas.valor.Q||3;
+      document.getElementById('m-s').value=metas.valor.S||0;
+      document.getElementById('m-m').value=metas.valor.M||95;
+      document.getElementById('m-pad').value=metas.valor.PAD||90;
+    }
+
+    // OEE targets
+    const oeeT=configRows.find(r=>r.chave==='targets_oee');
+    if(oeeT&&oeeT.valor){
+      document.getElementById('oee-l1').value=oeeT.valor.L1||60;
+      document.getElementById('oee-l2').value=oeeT.valor.L2||60;
+      document.getElementById('oee-l3').value=oeeT.valor.L3||60;
+      document.getElementById('oee-fab').value=oeeT.valor.fabrica||60;
+    }
+
+    // Productivity targets
+    const prodT=configRows.find(r=>r.chave==='targets_prod');
+    if(prodT&&prodT.valor){
+      ['L1','L2','L3'].forEach(ln=>{
+        const v=prodT.valor[ln]||{};
+        const elA=document.getElementById('prod-'+ln.toLowerCase()+'-alf');
+        const elK=document.getElementById('prod-'+ln.toLowerCase()+'-kg');
+        if(elA&&v.alfPH)elA.value=v.alfPH;
+        if(elK&&v.kgPH)elK.value=v.kgPH;
+      });
+    }
+
+    // Custos
+    const custos=configRows.find(r=>r.chave==='custos');
+    if(custos&&custos.valor){
+      document.getElementById('c-bisc').value=custos.valor.biscoito_kg||15;
+      document.getElementById('c-dl').value=custos.valor.dl_kg||15;
+      document.getElementById('c-cho').value=custos.valor.chocolate_kg||25;
+      document.getElementById('c-emb').value=custos.valor.embalagem_un||0.5;
+    }
+
+    // Peso targets processo
+    const targets=configRows.find(r=>r.chave==='targets_peso');
+    renderTargets(targets?targets.valor:{});
+
+    // Flowpack weight
+    const fp=configRows.find(r=>r.chave==='flowpack_peso');
+    if(fp&&fp.valor){
+      TIPOS.forEach(tp=>{const el=document.getElementById('fp-'+tp);if(el&&fp.valor[tp]!=null)el.value=fp.valor[tp];});
+    }
+
+    // Pessoas
+    const pessoas=configRows.find(r=>r.chave==='pessoas');
+    if(pessoas&&pessoas.valor){
+      const map={qualidade:'qual',manutencao:'man',producao:'prod',pcp:'pcp',almoxarifado:'alm'};
+      Object.entries(map).forEach(([k,sfx])=>{const el=document.getElementById('eq-'+sfx);if(el&&pessoas.valor[k])el.value=(pessoas.valor[k]||[]).join('\n');});
+    }
+  }catch(e){showToast('❌ '+e.message,'err');}
+}
+
+function renderTargets(t){
+  document.getElementById('targets-list').innerHTML=TIPOS.map(tp=>{
+    const d=t[tp]||{};
+    return '<div class="fg4" style="margin-bottom:6px"><div style="font-size:12px;font-weight:700;padding-top:8px">'+tp+'</div><div><input class="fi" type="number" step="0.1" id="tw-b-'+tp+'" value="'+(d.biscoito_3un||0)+'"/></div><div><input class="fi" type="number" step="0.1" id="tw-d-'+tp+'" value="'+(d.dosado||0)+'"/></div><div></div></div>';
+  }).join('');
+}
+
+async function saveConfig(){
+  const metas={P:+document.getElementById('m-p').value,Q:+document.getElementById('m-q').value,S:+document.getElementById('m-s').value,M:+document.getElementById('m-m').value,PAD:+document.getElementById('m-pad').value};
+  const targets_oee={L1:+document.getElementById('oee-l1').value,L2:+document.getElementById('oee-l2').value,L3:+document.getElementById('oee-l3').value,fabrica:+document.getElementById('oee-fab').value};
+  const targets_prod={L1:{alfPH:+document.getElementById('prod-l1-alf').value,kgPH:+document.getElementById('prod-l1-kg').value},L2:{alfPH:+document.getElementById('prod-l2-alf').value,kgPH:+document.getElementById('prod-l2-kg').value},L3:{alfPH:+document.getElementById('prod-l3-alf').value,kgPH:+document.getElementById('prod-l3-kg').value}};
+  const custos={biscoito_kg:+document.getElementById('c-bisc').value,dl_kg:+document.getElementById('c-dl').value,chocolate_kg:+document.getElementById('c-cho').value,embalagem_un:+document.getElementById('c-emb').value};
+  const targets_peso={};TIPOS.forEach(tp=>{targets_peso[tp]={biscoito_3un:+document.getElementById('tw-b-'+tp).value,dosado:+document.getElementById('tw-d-'+tp).value};});
+  const flowpack_peso={};TIPOS.forEach(tp=>{flowpack_peso[tp]=+document.getElementById('fp-'+tp).value;});
+  const pessoas={qualidade:document.getElementById('eq-qual').value.split('\n').filter(Boolean),manutencao:document.getElementById('eq-man').value.split('\n').filter(Boolean),producao:document.getElementById('eq-prod').value.split('\n').filter(Boolean),pcp:document.getElementById('eq-pcp').value.split('\n').filter(Boolean),almoxarifado:document.getElementById('eq-alm').value.split('\n').filter(Boolean)};
+
+  try{
+    const all=[
+      ['metas',metas],
+      ['targets_oee',targets_oee],
+      ['targets_prod',targets_prod],
+      ['custos',custos],
+      ['targets_peso',targets_peso],
+      ['flowpack_peso',flowpack_peso],
+      ['pessoas',pessoas]
+    ];
+    for(const[chave,valor]of all){
+      const existing=configRows.find(r=>r.chave===chave);
+      if(existing)await sbUpdate('config',existing.id,{valor,updated_at:new Date().toISOString()});
+      else await sbInsert('config',{chave,valor});
+    }
+    showToast('✅ Configurações salvas','ok');
+    setTimeout(()=>loadConfig(),500);
+  }catch(e){showToast('❌ '+e.message,'err');}
+}
+
+renderNav('config');
+loadConfig();
+</script>
+</body>
+</html>
