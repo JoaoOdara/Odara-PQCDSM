@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Odara · Entrada</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500;700&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="shared.css"/>
+<style>
+.pad-item{display:flex;align-items:flex-start;gap:8px;padding:10px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;flex-wrap:wrap;background:var(--white)}
+.pad-txt{flex:1;font-size:11px;min-width:180px;line-height:1.4}
+.pad-status{display:flex;gap:3px}
+.pad-btn{width:30px;height:30px;border:1.5px solid var(--border);border-radius:6px;background:var(--white);cursor:pointer;font-size:13px;font-weight:700;color:var(--muted);transition:.15s}
+.pad-btn.c{background:#DCFCE7;border-color:#86EFAC;color:var(--green)}.pad-btn.dl{background:#FEF9C3;border-color:#FCD34D;color:#92400E}.pad-btn.dg{background:#FEE2E2;border-color:#FCA5A5;color:var(--red)}.pad-btn.na{background:var(--lg);border-color:var(--border);color:var(--muted)}
+.pad-comment{flex:1 0 100%;margin-top:6px}
+.nc-cats{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.nc-cat-btn{padding:5px 10px;border:1px solid var(--border);border-radius:8px;font-size:10px;font-family:'DM Mono';cursor:pointer;background:var(--white);transition:.15s}
+.nc-cat-btn.active{background:var(--yellow);border-color:var(--yellow);color:var(--black);font-weight:700}
+.bird-card{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;cursor:pointer;transition:.15s;border:1.5px solid var(--border);margin-bottom:6px}
+.bird-card:hover{background:var(--lg)}.bird-card.active{border-color:var(--yellow);background:#FFFBEB}
+.bird-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.launch-card{background:var(--lg);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px}
+.launch-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
+.launch-type{font-size:9px;font-family:'DM Mono';padding:3px 10px;border-radius:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.launch-type.dos{background:#DBEAFE;color:var(--blue)}.launch-type.emb{background:#FEF9C3;color:#92400E}
+.launch-info{font-size:11px;font-family:'DM Mono';font-weight:600}
+.launch-del{background:none;border:none;cursor:pointer;color:var(--red);font-size:16px;padding:4px 8px}
+.parada-item{background:var(--lg);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:6px;display:grid;grid-template-columns:1fr 2fr 30px;gap:8px;align-items:center}
+.tipo-tab{display:inline-flex;gap:4px;background:var(--lg);border-radius:8px;padding:3px;width:100%}
+.tipo-btn{flex:1;padding:9px;border:none;border-radius:6px;font-size:11px;font-family:'DM Mono';font-weight:600;cursor:pointer;background:transparent;color:var(--muted);transition:.2s}
+.tipo-btn.active{background:var(--white);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.step-hdr{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.step-num{width:24px;height:24px;border-radius:50%;background:var(--yellow);color:var(--black);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:12px;font-family:'DM Mono';flex-shrink:0}
+.add-launch-btn{background:var(--white);border:2px dashed var(--border);border-radius:10px;padding:12px;width:100%;cursor:pointer;font-size:11px;font-family:'DM Mono';font-weight:600;color:var(--muted);transition:.15s}
+.add-launch-btn:hover{border-color:var(--yellow);color:var(--ink);background:var(--cream)}
+.add-launch-btn.dos:hover{border-color:var(--blue);color:var(--blue)}
+.add-launch-btn.emb:hover{border-color:#92400E;color:#92400E}
+</style>
+</head>
+<body>
+<div class="hdr"><div class="logo"><div class="logo-bar"></div><div><span class="logo-title">ODARA</span><span class="logo-tag">ENTRADA DE DADOS</span></div></div></div>
+<div class="nav-bar" id="main-nav"></div>
+
+<div class="content">
+  <div id="form-saved" style="display:none;background:#DCFCE7;border:1px solid #86EFAC;border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--green);font-weight:700;text-align:center">✅ Registro salvo!</div>
+  <div id="form-err" style="display:none;background:#FEE2E2;border:1px solid #FCA5A5;border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--red);font-weight:700"></div>
+
+  <div class="form-section">
+    <div class="step-hdr"><div class="step-num">1</div><span class="fsec-title">LINHA, TURNO E SUPERVISOR</span></div>
+    <div class="fg">
+      <div><label class="fl">Data</label><input id="f-data" class="fi" type="date"/></div>
+      <div><label class="fl">Linha</label>
+        <div class="tipo-tab" style="margin-top:3px">
+          <button class="tipo-btn" id="btn-l-L1" onclick="setLinha('L1')">Linha 1</button>
+          <button class="tipo-btn" id="btn-l-L2" onclick="setLinha('L2')">Linha 2</button>
+          <button class="tipo-btn" id="btn-l-L3" onclick="setLinha('L3')">Linha 3</button>
+        </div>
+      </div>
+      <div><label class="fl">Turno</label>
+        <div class="tipo-tab" style="margin-top:3px">
+          <button class="tipo-btn active" id="btn-t-T1" onclick="setTurno('T1')">T1 · 07:00</button>
+          <button class="tipo-btn" id="btn-t-T2" onclick="setTurno('T2')">T2 · 16:00</button>
+          <button class="tipo-btn" id="btn-t-T3" onclick="setTurno('T3')">T3 · noite</button>
+        </div>
+      </div>
+      <div><label class="fl">Supervisor</label><input id="f-sup" class="fi" type="text" placeholder="Nome"/></div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="step-hdr"><div class="step-num">2</div><span class="fsec-title">LANÇAMENTOS DO TURNO</span></div>
+    <p style="font-size:10px;color:var(--muted);margin-bottom:10px;font-family:'DM Mono'">Adicione lançamentos de dosagem e/ou embalagem. A linha pode dosar um item e embalar outro. Todos os SKUs estão disponíveis para todas as linhas.</p>
+    <div id="launch-list"></div>
+    <div class="fg" style="margin-top:10px">
+      <button class="add-launch-btn dos" onclick="openLaunchModal('dos')">➕ Adicionar Dosagem</button>
+      <button class="add-launch-btn emb" onclick="openLaunchModal('emb')">➕ Adicionar Embalagem</button>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="step-hdr"><div class="step-num">3</div><span class="fsec-title">PARADAS DE MANUTENÇÃO</span></div>
+    <div id="paradas-list"></div>
+    <button class="add-launch-btn" onclick="addParada()">➕ Adicionar Parada</button>
+  </div>
+
+  <div class="form-section">
+    <div class="step-hdr"><div class="step-num">4</div><span class="fsec-title">PERDAS DO TURNO</span></div>
+    <p style="font-size:10px;color:var(--muted);margin-bottom:10px;font-family:'DM Mono'">Perda total do dia = Varredura + Sobrepeso (auto) + BOPP. Sobrepeso é calculado das pesagens.</p>
+
+    <div style="margin-bottom:14px">
+      <label class="fl">Quebra de Biscoito do Fornecedor (kg)</label>
+      <input id="f-perda-quebra-fornec" class="fi" type="number" step="0.1" placeholder="0" min="0"/>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <label class="fl">Rejeito Dosado (kg)</label>
+      <input id="f-perda-rej" class="fi" type="number" step="0.1" placeholder="0" min="0"/>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div class="fl" style="margin-bottom:6px">Varredura (kg) — soma dos 3 componentes</div>
+      <div class="fg3">
+        <div><label class="fl" style="font-size:8px">Dosado</label><input id="f-varr-dos" class="fi" type="number" step="0.1" placeholder="0" min="0" oninput="updateVarrTotal()"/></div>
+        <div><label class="fl" style="font-size:8px">Coberto</label><input id="f-varr-cob" class="fi" type="number" step="0.1" placeholder="0" min="0" oninput="updateVarrTotal()"/></div>
+        <div><label class="fl" style="font-size:8px">Biscoito</label><input id="f-varr-bisc" class="fi" type="number" step="0.1" placeholder="0" min="0" oninput="updateVarrTotal()"/></div>
+      </div>
+      <div style="font-size:10px;color:var(--muted);font-family:'DM Mono';margin-top:4px;text-align:right">Total varredura: <span id="varr-total" style="font-weight:700;color:var(--orange)">0.0</span> kg</div>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <label class="fl">Embalagem BOPP (kg)</label>
+      <input id="f-perda-bopp" class="fi" type="number" step="0.1" placeholder="0" min="0"/>
+    </div>
+
+    <div>
+      <label class="fl">Comentário sobre perdas</label>
+      <textarea id="f-com-perdas" class="fi" placeholder="Causa-raiz, observações..."></textarea>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="step-hdr"><div class="step-num">5</div><span class="fsec-title">EQUIPE</span></div>
+    <div class="fg">
+      <div><label class="fl">Total colaboradores (quadro)</label><input id="f-total" class="fi" type="number" placeholder="0" min="0"/></div>
+      <div><label class="fl">Presentes</label><input id="f-pres" class="fi" type="number" placeholder="0" min="0"/></div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="step-hdr"><div class="step-num">6</div><span class="fsec-title">NÃO CONFORMIDADES (Qualidade)</span></div>
+    <div class="nc-cats" id="nc-cats"></div>
+    <div id="nc-modes" style="display:none">
+      <div class="fg" style="margin-bottom:8px;align-items:end">
+        <div><label class="fl">Modo de falha</label><select id="nc-mode" class="fi"></select></div>
+        <div><label class="fl">Qty</label><input id="nc-qty" class="fi" type="number" value="1" min="1"/></div>
+      </div>
+      <button class="add-launch-btn" onclick="addNc()">+ Adicionar NC</button>
+    </div>
+    <div id="nc-list" class="evt-list" style="margin-top:8px"></div>
+    <div style="margin-top:10px"><label class="fl">Comentário Qualidade</label><textarea id="f-com-q" class="fi" placeholder="Observações de qualidade..."></textarea></div>
+  </div>
+
+  <div class="form-section">
+    <div class="step-hdr"><div class="step-num">7</div><span class="fsec-title">SEGURANÇA (Bird)</span></div>
+    <div id="bird-none" class="bird-card active" onclick="setNenhumEvt()"><div class="bird-dot" style="background:var(--green)"></div><span style="font-size:12px;font-weight:700;color:var(--green)">✓ Nenhum evento no turno</span></div>
+    <div id="bird-cards"></div>
+    <div id="bird-form" style="display:none;margin-top:10px">
+      <div class="fg" style="align-items:end">
+        <div><label class="fl">Modo</label><select id="bird-mode" class="fi"></select></div>
+        <div><label class="fl">Descrição</label><input id="bird-desc" class="fi" type="text" placeholder="Detalhe"/></div>
+      </div>
+      <button class="add-launch-btn" onclick="addInc()" style="margin-top:8px">+ Registrar Evento</button>
+    </div>
+    <div id="inc-list" class="evt-list" style="margin-top:8px"></div>
+  </div>
+
+  <div class="form-section">
+    <div class="step-hdr"><div class="step-num">8</div><span class="fsec-title">CHECKLIST DE PADRÕES</span></div>
+    <p style="font-size:10px;color:var(--muted);margin-bottom:10px;font-family:'DM Mono'">C = Conforme · DL = Desvio leve · DG = Desvio grave · NA = Não aplicável</p>
+    <div id="pad-list"></div>
+  </div>
+
+  <div class="form-section">
+    <div class="step-hdr"><div class="step-num">9</div><span class="fsec-title">COMENTÁRIO GERAL</span></div>
+    <textarea id="f-com-p" class="fi" placeholder="Observações do turno, pendências..."></textarea>
+  </div>
+
+  <button class="save-btn" id="save-btn" onclick="saveEntry()">💾 Salvar Registro</button>
+</div>
+
+<div class="modal-overlay" id="launch-modal" onclick="if(event.target===this)closeLaunchModal()">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-hdr">
+      <div><div class="modal-title" id="launch-modal-title">Adicionar Lançamento</div><div class="modal-sub" id="launch-modal-sub"></div></div>
+      <button class="modal-close" onclick="closeLaunchModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom:12px">
+        <label class="fl">SKU</label>
+        <select id="lm-sku" class="fi" onchange="onLmSkuChange()"></select>
+        <div style="background:var(--lg);border-radius:8px;padding:6px 10px;margin-top:4px"><span style="font-size:10px;color:var(--muted);font-family:'DM Mono'" id="lm-sku-info">—</span></div>
+      </div>
+      <div class="fg">
+        <div><label class="fl">Meta (unidades)</label><input id="lm-meta" class="fi" type="number" placeholder="0" min="0"/></div>
+        <div><label class="fl">Real (unidades)</label><input id="lm-real" class="fi" type="number" placeholder="0" min="0"/></div>
+      </div>
+      <button class="save-btn" style="margin-top:16px;margin-bottom:0;padding:12px" onclick="confirmLaunch()">Adicionar ao Turno</button>
+    </div>
+  </div>
+</div>
+
+<div class="footer"><span>ODARA · PQCDSM v11 · Entrada</span><span></span></div>
+<div class="toast" id="toast"></div>
+
+<script src="shared.js"></script>
+<script>
+let fLinha=null,fTurno='T1';
+let dosagens=[],embalagens=[];
+let paradas=[];
+let formNcs=[],formIncs=[],formPadroes={},formPadComents={};
+let birdCamada=null,ncCat=null;
+let currentLaunchType=null;
+
+const NC_CATS={
+  'Aparência':['Mancha chocolate','Deformação','Riscos/marcas','Falha cobertura','Excesso chocolate','Bolhas'],
+  'Peso':['Abaixo Qn-T','Acima limite','Variação excessiva'],
+  'Embalagem':['Solda falha','Rótulo torto','Rótulo errado','Sem data','Embalagem danificada','Código barras ilegível'],
+  'Corpo estranho':['Metal','Plástico','Inseto','Cabelo','Outro CE'],
+  'Validade':['Produto vencido','Data ilegível','Shelf life curto'],
+  'Processo':['Biscoito cru','Biscoito queimado','DL cristalizado','Chocolate destemperado','Massa irregular','Recheio vazando'],
+  'Outros':['Outro (descrever)']
+};
+const BIRD_MODES={
+  'Quase-acidente':['Escorregão','Tropeço','Quase queda objeto','Quase prensar','Quase corte','Quase choque elétrico','Quase queimadura','Desvio ergonômico','Falta EPI observada','Outro'],
+  'Dano material':['Quebra equipamento','Derramamento','Colisão empilhadeira','Queda produto','Dano estrutural','Vazamento','Outro'],
+  'Lesão leve':['Corte superficial','Queimadura leve','Contusão','Irritação pele','Outro'],
+  'Acidente grave':['Fratura','Queimadura grave','Amputação','Queda altura','Choque elétrico','Prensar grave','Intoxicação','Outro']
+};
+
+function setLinha(l){fLinha=l;['L1','L2','L3'].forEach(x=>document.getElementById('btn-l-'+x).classList.toggle('active',x===l));}
+function setTurno(t){fTurno=t;['T1','T2','T3'].forEach(x=>document.getElementById('btn-t-'+x).classList.toggle('active',x===t));}
+
+function openLaunchModal(type){
+  currentLaunchType=type;
+  document.getElementById('launch-modal-title').textContent=type==='dos'?'➕ Adicionar Dosagem':'➕ Adicionar Embalagem';
+  document.getElementById('launch-modal-sub').textContent=type==='dos'?'Item dosado no turno':'Item coberto/embalado no turno';
+  const sel=document.getElementById('lm-sku');
+  sel.innerHTML=ALL_SKUS.map(s=>'<option value="'+s.cod+'">'+s.cod+' — '+s.desc+'</option>').join('');
+  document.getElementById('lm-meta').value='';
+  document.getElementById('lm-real').value='';
+  onLmSkuChange();
+  document.getElementById('launch-modal').classList.add('open');
+}
+function closeLaunchModal(){document.getElementById('launch-modal').classList.remove('open');}
+function onLmSkuChange(){const cod=document.getElementById('lm-sku').value;const s=ALL_SKUS.find(x=>x.cod===cod);document.getElementById('lm-sku-info').textContent=s?s.desc+' · '+s.gram+'g':'—';}
+function confirmLaunch(){
+  const cod=document.getElementById('lm-sku').value;
+  const s=ALL_SKUS.find(x=>x.cod===cod);
+  const meta=+document.getElementById('lm-meta').value||0,real=+document.getElementById('lm-real').value||0;
+  if(!real&&!meta){showToast('⚠️ Informe meta ou real','err');return;}
+  if(!s)return;
+  const obj={sku:s.cod,desc:s.desc,gram:s.gram,meta,real};
+  if(currentLaunchType==='dos')dosagens.push(obj);else embalagens.push(obj);
+  renderLaunches();closeLaunchModal();
+}
+function removeLaunch(type,i){if(type==='dos')dosagens.splice(i,1);else embalagens.splice(i,1);renderLaunches();}
+function renderLaunches(){
+  let h='';
+  dosagens.forEach((d,i)=>{h+='<div class="launch-card"><div class="launch-hdr"><span class="launch-type dos">🔧 Dosagem</span><button class="launch-del" onclick="removeLaunch(\'dos\','+i+')">✕</button></div><div class="launch-info">'+d.sku+' · '+d.desc.slice(0,40)+'</div><div style="font-size:10px;color:var(--muted);font-family:\'DM Mono\';margin-top:4px">Meta: '+d.meta.toLocaleString('pt-BR')+' · Real: <strong>'+d.real.toLocaleString('pt-BR')+'</strong> · '+d.gram+'g</div></div>';});
+  embalagens.forEach((e,i)=>{h+='<div class="launch-card"><div class="launch-hdr"><span class="launch-type emb">📦 Embalagem</span><button class="launch-del" onclick="removeLaunch(\'emb\','+i+')">✕</button></div><div class="launch-info">'+e.sku+' · '+e.desc.slice(0,40)+'</div><div style="font-size:10px;color:var(--muted);font-family:\'DM Mono\';margin-top:4px">Meta: '+e.meta.toLocaleString('pt-BR')+' · Real: <strong>'+e.real.toLocaleString('pt-BR')+'</strong> · '+e.gram+'g</div></div>';});
+  if(!h)h='<div style="text-align:center;padding:14px;color:var(--muted);font-size:10px;font-family:\'DM Mono\'">Nenhum lançamento — use os botões abaixo</div>';
+  document.getElementById('launch-list').innerHTML=h;
+}
+
+function addParada(){paradas.push({min:0,comentario:''});renderParadas();}
+function removeParada(i){paradas.splice(i,1);renderParadas();}
+function updateParada(i,field,val){paradas[i][field]=field==='min'?(+val||0):val;}
+function renderParadas(){
+  if(!paradas.length){document.getElementById('paradas-list').innerHTML='<div style="text-align:center;padding:10px;color:var(--muted);font-size:10px;font-family:\'DM Mono\';margin-bottom:8px">Nenhuma parada registrada</div>';return;}
+  document.getElementById('paradas-list').innerHTML=paradas.map((p,i)=>'<div class="parada-item"><div><label class="fl" style="font-size:8px">Duração (min)</label><input class="fi" type="number" min="0" value="'+(p.min||'')+'" onchange="updateParada('+i+',\'min\',this.value)"/></div><div><label class="fl" style="font-size:8px">Comentário</label><input class="fi" type="text" placeholder="Causa, equipamento..." value="'+(p.comentario||'').replace(/"/g,'&quot;')+'" onchange="updateParada('+i+',\'comentario\',this.value)"/></div><button class="launch-del" onclick="removeParada('+i+')" style="padding-top:16px">✕</button></div>').join('');
+}
+
+function updateVarrTotal(){const v=(+document.getElementById('f-varr-dos').value||0)+(+document.getElementById('f-varr-cob').value||0)+(+document.getElementById('f-varr-bisc').value||0);document.getElementById('varr-total').textContent=v.toFixed(1);}
+
+function renderNcCats(){document.getElementById('nc-cats').innerHTML=Object.keys(NC_CATS).map(c=>'<button class="nc-cat-btn '+(ncCat===c?'active':'')+'" onclick="selectNcCat(\''+c+'\')">'+c+'</button>').join('');}
+function selectNcCat(c){ncCat=c;renderNcCats();document.getElementById('nc-modes').style.display='block';document.getElementById('nc-mode').innerHTML=(NC_CATS[c]||[]).map(m=>'<option value="'+m+'">'+m+'</option>').join('');}
+function addNc(){const mode=document.getElementById('nc-mode').value,qty=+document.getElementById('nc-qty').value||1;if(!mode)return;formNcs.push({cat:ncCat,mode,qty});document.getElementById('nc-qty').value='1';renderNcList();}
+function removeNc(i){formNcs.splice(i,1);renderNcList();}
+function renderNcList(){document.getElementById('nc-list').innerHTML=formNcs.map((n,i)=>'<div class="evt-item"><span class="evt-cnt">'+n.qty+'</span><span class="evt-cat">'+n.cat+' → '+n.mode+'</span><button class="evt-del" onclick="removeNc('+i+')">✕</button></div>').join('');}
+
+function renderBirdCards(){document.getElementById('bird-cards').innerHTML=BYRD_LEVELS.map(lv=>'<div class="bird-card '+(birdCamada===lv?'active':'')+'" onclick="selectBird(\''+lv+'\')"><div class="bird-dot" style="background:'+BYRD_COLORS[lv]+'"></div><span style="font-size:11px;font-weight:600">'+lv+'</span></div>').join('');}
+function setNenhumEvt(){birdCamada=null;document.getElementById('bird-none').classList.add('active');document.getElementById('bird-form').style.display='none';renderBirdCards();}
+function selectBird(lv){birdCamada=lv;document.getElementById('bird-none').classList.remove('active');document.getElementById('bird-form').style.display='block';document.getElementById('bird-mode').innerHTML=(BIRD_MODES[lv]||[]).map(m=>'<option value="'+m+'">'+m+'</option>').join('');renderBirdCards();}
+function addInc(){const modo=document.getElementById('bird-mode').value,desc=document.getElementById('bird-desc').value;if(!birdCamada)return;formIncs.push({camada:birdCamada,modo,descricao:desc});document.getElementById('bird-desc').value='';renderIncList();}
+function removeInc(i){formIncs.splice(i,1);renderIncList();}
+function renderIncList(){document.getElementById('inc-list').innerHTML=formIncs.map((n,i)=>'<div class="evt-item"><span class="evt-cat" style="font-size:10px"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+(BYRD_COLORS[n.camada]||'#999')+';margin-right:4px"></span><strong>'+n.camada+'</strong> → '+n.modo+(n.descricao?' — '+n.descricao:'')+'</span><button class="evt-del" onclick="removeInc('+i+')">✕</button></div>').join('');}
+
+function renderPadList(){
+  let h='';
+  PADROES_ITEMS.forEach((p,i)=>{
+    const v=formPadroes[i]||'',com=formPadComents[i]||'';
+    h+='<div class="pad-item"><span class="pad-txt">'+p.item+'</span>';
+    h+='<div class="pad-status">'+['c','dl','dg','na'].map(s=>'<button class="pad-btn '+(v===s?s:'')+'" onclick="setPad('+i+',\''+s+'\')">'+(s==='c'?'✓':s==='dl'?'!':s==='dg'?'✕':'—')+'</button>').join('')+'</div>';
+    h+='<div class="pad-comment"><input class="fi" style="font-size:11px;padding:6px 10px" type="text" placeholder="Comentário (opcional)..." value="'+com.replace(/"/g,'&quot;')+'" onchange="formPadComents['+i+']=this.value"/></div>';
+    h+='</div>';
+  });
+  document.getElementById('pad-list').innerHTML=h;
+}
+function setPad(i,s){formPadroes[i]=formPadroes[i]===s?'':s;renderPadList();}
+
+async function saveEntry(){
+  const sup=document.getElementById('f-sup').value.trim();
+  if(!sup){showToast('⚠️ Informe o supervisor','err');return;}
+  if(!fLinha){showToast('⚠️ Selecione a linha','err');return;}
+  if(!dosagens.length&&!embalagens.length){showToast('⚠️ Adicione ao menos um lançamento','err');return;}
+
+  const totalReal=[...dosagens,...embalagens].reduce((s,x)=>s+(x.real||0),0);
+  const totalMeta=[...dosagens,...embalagens].reduce((s,x)=>s+(x.meta||0),0);
+  const primary=(embalagens[0]||dosagens[0])||{sku:'',desc:'',gram:0,meta:0,real:0};
+  const skus_produzidos=[
+    ...dosagens.map(d=>({sku:d.sku,desc:d.desc,gram:d.gram,meta:d.meta,real:d.real,tipo:'dosagem'})),
+    ...embalagens.map(e=>({sku:e.sku,desc:e.desc,gram:e.gram,meta:e.meta,real:e.real,tipo:'embalagem'}))
+  ];
+  const totalManutMin=paradas.reduce((s,p)=>s+(+p.min||0),0);
+
+  const btn=document.getElementById('save-btn');btn.disabled=true;btn.textContent='⏳ Salvando…';
+
+  const varrDos=+document.getElementById('f-varr-dos').value||0;
+  const varrCob=+document.getElementById('f-varr-cob').value||0;
+  const varrBisc=+document.getElementById('f-varr-bisc').value||0;
+  const varrTotal=+(varrDos+varrCob+varrBisc).toFixed(2);
+
+  const payload={
+    data:document.getElementById('f-data').value,
+    linha:fLinha,turno:fTurno,supervisor:sup,
+    tipo_input:dosagens.length?'dosagem':'embalagem',
+    sku:primary.sku,sku_desc:primary.desc,sku_gram:primary.gram,
+    meta_unid:totalMeta,real_unid:totalReal,
+    dosagens:dosagens,embalagens:embalagens,skus_produzidos:skus_produzidos,
+    perda_quebra_fornec_kg:+document.getElementById('f-perda-quebra-fornec').value||0,
+    perda_rejeito_dosado_kg:+document.getElementById('f-perda-rej').value||0,
+    perda_varr_dos_kg:varrDos,perda_varr_cob_kg:varrCob,perda_varr_bisc_kg:varrBisc,
+    perda_varredura_kg:varrTotal,
+    perda_bopp_kg:+document.getElementById('f-perda-bopp').value||0,
+    comentario_perdas:document.getElementById('f-com-perdas').value||'',
+    perda_dl_kg:0,perda_biscoito_kg:0,perda_quebra_bolacha_kg:0,
+    perda_dosado_un:0,perda_coberto_un:0,perda_chocolate_un:0,
+    paradas_manut:paradas,parada_manut:paradas.length>0,parada_manut_min:totalManutMin,
+    total_colab:+document.getElementById('f-total').value||0,
+    presentes:+document.getElementById('f-pres').value||0,
+    ncs:formNcs,
+    incidentes:formIncs.length?formIncs:[{camada:'nenhum',modo:'',descricao:''}],
+    padroes:formPadroes,padroes_comentarios:formPadComents,
+    comentario_p:document.getElementById('f-com-p').value,
+    comentario_q:document.getElementById('f-com-q').value
+  };
+
+  try{
+    await sbInsert('pqcdsm',payload);
+    showToast('✅ Salvo!','ok');clearForm();
+  }catch(e){
+    document.getElementById('form-err').style.display='block';
+    document.getElementById('form-err').textContent='❌ '+e.message;
+  }
+  btn.disabled=false;btn.textContent='💾 Salvar Registro';
+}
+
+function clearForm(){
+  ['f-sup','f-com-p','f-com-q','f-com-perdas','f-perda-quebra-fornec','f-perda-rej','f-varr-dos','f-varr-cob','f-varr-bisc','f-perda-bopp','f-total','f-pres'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  updateVarrTotal();
+  dosagens=[];embalagens=[];paradas=[];formNcs=[];formIncs=[];formPadroes={};formPadComents={};birdCamada=null;ncCat=null;
+  renderLaunches();renderParadas();renderNcList();renderIncList();renderPadList();renderNcCats();renderBirdCards();
+  document.getElementById('bird-none').classList.add('active');
+  document.getElementById('bird-form').style.display='none';
+  document.getElementById('nc-modes').style.display='none';
+  document.getElementById('form-saved').style.display='block';
+  setTimeout(()=>document.getElementById('form-saved').style.display='none',3000);
+}
+
+document.getElementById('f-data').value=today();
+renderLaunches();renderParadas();renderNcCats();renderBirdCards();renderPadList();renderNav('entrada');
+</script>
+</body>
+</html>
