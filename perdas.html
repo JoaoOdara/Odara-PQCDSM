@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Odara · Perdas</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500;700&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="shared.css"/>
+<style>
+.section-card{background:var(--white);border:1.5px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px}
+.big-card{background:var(--grad1);color:var(--white);border-radius:20px;padding:22px;margin-bottom:14px;position:relative;overflow:hidden}
+.big-card::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:var(--red);opacity:.08}
+.big-lbl{font-size:10px;font-family:'DM Mono';color:#9CA3AF;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.big-val{font-family:'Bebas Neue';font-size:56px;color:var(--yellow);letter-spacing:2px;line-height:1}
+.big-pct{font-family:'Bebas Neue';font-size:24px;color:#FCA5A5;line-height:1;margin-top:6px}
+.big-sub{font-size:11px;color:#D1D5DB;margin-top:4px;font-family:'DM Mono'}
+.big-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:16px}
+.big-item{background:rgba(255,255,255,0.06);border-radius:10px;padding:12px}
+.big-item-v{font-family:'Bebas Neue';font-size:22px;line-height:1;color:var(--yellow)}
+.big-item-pct{font-size:10px;color:#FCA5A5;font-family:'DM Mono';margin-top:2px}
+.big-item-l{font-size:9px;color:#9CA3AF;font-family:'DM Mono';letter-spacing:1px;margin-top:4px;text-transform:uppercase}
+
+/* Faróis de alerta */
+.farois-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.farol{border-radius:14px;padding:14px;border-left:5px solid;position:relative}
+.farol.ok{background:#DCFCE7;border-color:#22C55E;color:#15803D}
+.farol.atencao{background:#FEF9C3;border-color:#F59E0B;color:#92400E}
+.farol.critico{background:#FEE2E2;border-color:#DC2626;color:#991B1B}
+.farol-hdr{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.farol-icon{font-size:20px;line-height:1}
+.farol-title{font-size:10px;font-family:'DM Mono';font-weight:700;letter-spacing:1px;text-transform:uppercase;flex:1}
+.farol-val{font-family:'Bebas Neue';font-size:24px;line-height:1}
+.farol-msg{font-size:11px;margin-top:4px;line-height:1.4}
+
+.weight-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.weight-card{background:var(--lg);border-radius:12px;padding:14px;border-left:4px solid var(--purple)}
+.weight-card.sobre{border-left-color:#7C3AED}
+.weight-card.dose{border-left-color:#EA580C}
+.weight-card-title{font-size:10px;font-family:'DM Mono';color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:700}
+.weight-card-val{font-family:'Bebas Neue';font-size:32px;line-height:1;margin-top:4px}
+.weight-card-sub{font-size:10px;color:var(--muted);font-family:'DM Mono';margin-top:4px}
+.omie-comp-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px}
+.omie-comp-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.omie-comp-name{font-family:'Bebas Neue';font-size:18px;letter-spacing:1px}
+.omie-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.omie-stat{background:var(--lg);border-radius:8px;padding:8px;text-align:center}
+.omie-stat-v{font-family:'Bebas Neue';font-size:20px;line-height:1}
+.omie-stat-l{font-size:8px;color:var(--muted);font-family:'DM Mono';margin-top:3px;text-transform:uppercase;letter-spacing:0.5px}
+
+/* Top perdas */
+.top-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--lg);border-radius:10px;margin-bottom:6px}
+.top-rank{font-family:'Bebas Neue';font-size:18px;color:var(--muted);min-width:24px;text-align:center}
+.top-rank.r1{color:#DC2626}.top-rank.r2{color:#EA580C}.top-rank.r3{color:#D97706}
+.top-bar{flex:1;height:18px;background:var(--white);border-radius:9px;overflow:hidden;position:relative}
+.top-bar-fill{height:100%;background:linear-gradient(90deg,#DC2626,#F59E0B);border-radius:9px}
+.top-info{flex:1;font-size:11px;font-family:'DM Mono';font-weight:600}
+.top-val{font-family:'Bebas Neue';font-size:18px;color:var(--ink);min-width:80px;text-align:right}
+
+/* Custom date filter */
+.date-input{padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:11px;font-family:'DM Mono';background:var(--white)}
+.range-active{background:var(--yellow);color:var(--black);border-color:var(--yellow);font-weight:700}
+
+@media(max-width:600px){.big-val{font-size:42px}.weight-grid{grid-template-columns:1fr}.omie-row3{grid-template-columns:1fr 1fr}.farois-grid{grid-template-columns:1fr}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="hdr"><div class="logo"><div class="logo-bar"></div><div><span class="logo-title">ODARA</span><span class="logo-tag">PERDAS</span></div></div><div class="hdr-right"><span class="hdr-cnt" id="hdr-cnt">—</span></div></div>
+<div class="nav-bar" id="main-nav"></div>
+<div style="background:var(--white);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:sticky;top:52px;z-index:100">
+  <span class="fl" style="margin:0">Período</span>
+  <div style="display:flex;gap:4px" id="period-pills">
+    <button class="pill" onclick="setPeriod('hoje',this)">Hoje</button>
+    <button class="pill active" onclick="setPeriod('semana',this)">7d</button>
+    <button class="pill" onclick="setPeriod('mes',this)">30d</button>
+    <button class="pill" onclick="setPeriod('trim',this)">90d</button>
+    <button class="pill" onclick="setPeriod('ano',this)">365d</button>
+    <button class="pill" id="pill-custom" onclick="setPeriod('custom',this)">Custom</button>
+  </div>
+  <div id="custom-range" style="display:none;align-items:center;gap:6px">
+    <span style="font-size:10px;color:var(--muted);font-family:'DM Mono'">de</span>
+    <input id="d-from" class="date-input" type="date" onchange="onCustomDate()"/>
+    <span style="font-size:10px;color:var(--muted);font-family:'DM Mono'">até</span>
+    <input id="d-to" class="date-input" type="date" onchange="onCustomDate()"/>
+  </div>
+  <div style="width:1px;height:24px;background:var(--border)"></div>
+  <span class="fl" style="margin:0">Linha</span>
+  <div style="display:flex;gap:4px" id="line-pills">
+    <button class="pill active" onclick="setLine('ALL',this)">Todas</button>
+    <button class="pill" onclick="setLine('L1',this)">L1</button>
+    <button class="pill" onclick="setLine('L2',this)">L2</button>
+    <button class="pill" onclick="setLine('L3',this)">L3</button>
+  </div>
+  <div style="width:1px;height:24px;background:var(--border)"></div>
+  <span class="fl" style="margin:0">Turno</span>
+  <div style="display:flex;gap:4px" id="turno-pills">
+    <button class="pill active" onclick="setTurno('ALL',this)">Todos</button>
+    <button class="pill" onclick="setTurno('T1',this)">T1</button>
+    <button class="pill" onclick="setTurno('T2',this)">T2</button>
+    <button class="pill" onclick="setTurno('T3',this)">T3</button>
+  </div>
+  <div style="width:1px;height:24px;background:var(--border)"></div>
+  <span style="font-size:10px;color:var(--blue);font-family:'DM Mono';cursor:pointer" onclick="loadAll()">↻ atualizar</span>
+</div>
+<div class="content" id="body"></div>
+<div class="footer"><span>ODARA · PQCDSM v12 · Perdas</span><span></span></div>
+<div class="toast" id="toast"></div>
+
+<script src="shared.js"></script>
+<script>
+if(!checkAuth())throw new Error('not auth');
+
+let allEntries=[],pesagensTodas=[];
+let period='semana',fLine='ALL',fTurno='ALL';
+let customFrom=null,customTo=null;
+let charts={};
+
+function setPeriod(p,el){
+  period=p;
+  document.querySelectorAll('#period-pills .pill').forEach(b=>b.classList.remove('active'));el.classList.add('active');
+  const cr=document.getElementById('custom-range');
+  if(p==='custom'){
+    cr.style.display='flex';
+    if(!customFrom){const d=new Date();d.setDate(d.getDate()-7);customFrom=d.toISOString().slice(0,10);document.getElementById('d-from').value=customFrom;}
+    if(!customTo){customTo=today();document.getElementById('d-to').value=customTo;}
+  }else{cr.style.display='none';}
+  render();
+}
+function onCustomDate(){customFrom=document.getElementById('d-from').value;customTo=document.getElementById('d-to').value;if(customFrom&&customTo)render();}
+function setLine(l,el){fLine=l;document.querySelectorAll('#line-pills .pill').forEach(b=>b.classList.remove('active'));el.classList.add('active');render();}
+function setTurno(t,el){fTurno=t;document.querySelectorAll('#turno-pills .pill').forEach(b=>b.classList.remove('active'));el.classList.add('active');render();}
+
+async function loadAll(){
+  document.getElementById('hdr-cnt').textContent='carregando…';
+  try{
+    await sbGetConfig();
+    allEntries=(await sbQuery('pqcdsm','select=*&order=data.desc&limit=2000')).map(norm);
+    const cut=new Date();cut.setDate(cut.getDate()-400);
+    pesagensTodas=await sbQuery('pesagens','select=*&data=gte.'+cut.toISOString().slice(0,10));
+    document.getElementById('hdr-cnt').textContent=allEntries.length+' reg';
+  }catch(e){showToast('❌ '+e.message,'err');}
+  render();
+}
+
+function getRange(){
+  if(period==='custom'){return{cut:customFrom||today(),ref:customTo||today()};}
+  const ref=new Date();const cut=new Date(ref);
+  if(period==='hoje')cut.setDate(cut.getDate());
+  else if(period==='semana')cut.setDate(cut.getDate()-7);
+  else if(period==='mes')cut.setDate(cut.getDate()-30);
+  else if(period==='trim')cut.setDate(cut.getDate()-90);
+  else cut.setDate(cut.getDate()-365);
+  return{cut:cut.toISOString().slice(0,10),ref:ref.toISOString().slice(0,10)};
+}
+
+function getFiltered(){
+  const{cut,ref}=getRange();
+  let d=activeEntries(allEntries).filter(e=>e.data>=cut&&e.data<=ref);
+  if(fLine!=='ALL')d=d.filter(e=>e.linha===fLine);
+  if(fTurno!=='ALL')d=d.filter(e=>e.turno===fTurno);
+  return d;
+}
+
+function sobrepesoData(dt,linha){
+  const lnP=pesagensTodas.filter(p=>p.linha===linha&&p.data===dt&&p.ponto==='final');
+  if(!lnP.length)return 0;
+  const bySku={};
+  lnP.forEach(p=>{const k=p.sku+'||'+p.sku_gram;if(!bySku[k])bySku[k]={gram:+p.sku_gram,weights:[]};[p.p1,p.p2,p.p3,p.p4,p.p5].filter(v=>v!=null).forEach(v=>bySku[k].weights.push(v));});
+  let tot=0;
+  const lnEntries=activeEntries(allEntries).filter(e=>e.data===dt&&e.linha===linha);
+  Object.entries(bySku).forEach(([k,sk])=>{
+    if(!sk.weights.length)return;
+    const mean=sk.weights.reduce((a,b)=>a+b,0)/sk.weights.length;
+    const overPct=mean>sk.gram?(mean-sk.gram)/sk.gram:0;
+    let alfSku=0;
+    lnEntries.forEach(e=>{const sp=e.embalagens&&e.embalagens.length?e.embalagens:(e.skusProd||[]).filter(s=>s.tipo==='embalagem');if(sp&&sp.length)sp.forEach(s=>{if(s.sku===k.split('||')[0])alfSku+=(s.real||0);});});
+    if(!alfSku){alfSku=lnEntries.reduce((s,e)=>s+(e.realUnid||0),0);}
+    tot+=(overPct*alfSku*sk.gram)/1000;
+  });
+  return +tot.toFixed(2);
+}
+
+function sobredosagemData(dt,linha){
+  const lnEntries=activeEntries(allEntries).filter(e=>e.data===dt&&e.linha===linha);
+  let tot=0;
+  lnEntries.forEach(e=>{
+    const embs=e.embalagens||[];
+    embs.forEach(emb=>{
+      const dataDose=emb.dataDosagem;if(!dataDose)return;
+      const ps=pesagensTodas.filter(p=>p.linha===linha&&p.data===dataDose&&p.sku===emb.sku);
+      if(!ps.length)return;
+      const weights=[];const gram=+emb.gram||0;
+      ps.forEach(p=>[p.p1,p.p2,p.p3,p.p4,p.p5].filter(v=>v!=null).forEach(v=>weights.push(v)));
+      if(!weights.length||!gram)return;
+      const mean=weights.reduce((a,b)=>a+b,0)/weights.length;
+      const overPct=mean>gram?(mean-gram)/gram:0;
+      tot+=(overPct*(emb.real||0)*gram)/1000;
+    });
+  });
+  return +tot.toFixed(2);
+}
+
+// Sobrepeso por SKU para top SKUs
+function sobrepesoPorSkuLinha(dt,linha){
+  const lnP=pesagensTodas.filter(p=>p.linha===linha&&p.data===dt&&p.ponto==='final');
+  if(!lnP.length)return {};
+  const bySku={};
+  lnP.forEach(p=>{const k=p.sku;if(!bySku[k])bySku[k]={sku:p.sku,desc:p.sku_desc||'',gram:+p.sku_gram,weights:[]};[p.p1,p.p2,p.p3,p.p4,p.p5].filter(v=>v!=null).forEach(v=>bySku[k].weights.push(v));});
+  const lnEntries=activeEntries(allEntries).filter(e=>e.data===dt&&e.linha===linha);
+  const out={};
+  Object.values(bySku).forEach(sk=>{
+    if(!sk.weights.length)return;
+    const mean=sk.weights.reduce((a,b)=>a+b,0)/sk.weights.length;
+    const overPct=mean>sk.gram?(mean-sk.gram)/sk.gram:0;
+    let alfSku=0;
+    lnEntries.forEach(e=>{const sp=e.embalagens&&e.embalagens.length?e.embalagens:(e.skusProd||[]).filter(s=>s.tipo==='embalagem');if(sp&&sp.length)sp.forEach(s=>{if(s.sku===sk.sku)alfSku+=(s.real||0);});});
+    out[sk.sku]={sku:sk.sku,desc:sk.desc,kg:+(overPct*alfSku*sk.gram/1000).toFixed(2),overPct:+(overPct*100).toFixed(2)};
+  });
+  return out;
+}
+
+function render(){
+  const flt=getFiltered();
+  const{cut,ref}=getRange();
+  if(!flt.length){document.getElementById('body').innerHTML='<div class="empty" style="margin-top:20px"><div style="font-size:36px;margin-bottom:10px">📋</div><div style="font-weight:700">Nenhum registro nesse filtro</div><div style="font-size:11px;color:var(--muted);margin-top:6px">'+cut+' → '+ref+'</div></div>';return;}
+
+  const lines=fLine==='ALL'?['L1','L2','L3']:[fLine];
+
+  // Acumulados
+  const totalVarrDos=+flt.reduce((s,e)=>s+(e.perdaVarrDosKg||0),0).toFixed(1);
+  const totalVarrCob=+flt.reduce((s,e)=>s+(e.perdaVarrCobKg||0),0).toFixed(1);
+  const totalVarrBisc=+flt.reduce((s,e)=>s+(e.perdaVarrBiscKg||0),0).toFixed(1);
+  const totalVarr=+(totalVarrDos+totalVarrCob+totalVarrBisc).toFixed(1);
+  const totalQuebraFornec=+flt.reduce((s,e)=>s+(e.perdaQuebraFornecKg||0),0).toFixed(1);
+  const totalRejeito=+flt.reduce((s,e)=>s+(e.perdaRejeitoDosKg||0),0).toFixed(1);
+  const totalBopp=+flt.reduce((s,e)=>s+(e.perdaBoppKg||0),0).toFixed(1);
+
+  const datas=[...new Set(flt.map(e=>e.data))].sort();
+  let totalSobr=0,totalSobreDose=0;
+  datas.forEach(dt=>{lines.forEach(ln=>{totalSobr+=sobrepesoData(dt,ln);totalSobreDose+=sobredosagemData(dt,ln);});});
+  totalSobr=+totalSobr.toFixed(2);totalSobreDose=+totalSobreDose.toFixed(2);
+
+  const perdaTotal=+(totalVarr+totalSobr+totalBopp).toFixed(1);
+
+  // Kg produzidos
+  let totalKgProd=0,totalAlfEmb=0;
+  flt.forEach(e=>{if(e.embalagens&&e.embalagens.length){e.embalagens.forEach(x=>{totalKgProd+=(x.real||0)*(x.gram||0)/1000;totalAlfEmb+=(x.real||0);});}else{const sp=e.skusProd&&e.skusProd.length?e.skusProd:[{real:e.realUnid,gram:e.skuGram}];sp.forEach(s=>{totalKgProd+=(s.real||0)*(s.gram||0)/1000;if(s.tipo!=='dosagem')totalAlfEmb+=(s.real||0);});}});
+  totalKgProd=+totalKgProd.toFixed(1);
+
+  const perdaPct=totalKgProd>0?+((perdaTotal/totalKgProd)*100).toFixed(2):0;
+  const varrPct=totalKgProd>0?+((totalVarr/totalKgProd)*100).toFixed(2):0;
+  const sobrPct=totalKgProd>0?+((totalSobr/totalKgProd)*100).toFixed(2):0;
+  const boppPct=totalKgProd>0?+((totalBopp/totalKgProd)*100).toFixed(2):0;
+  const quebraPct=totalKgProd>0?+((totalQuebraFornec/totalKgProd)*100).toFixed(2):0;
+  const rejeitoPct=totalKgProd>0?+((totalRejeito/totalKgProd)*100).toFixed(2):0;
+
+  // OMIE acumulado
+  const omieBisc=+flt.reduce((s,e)=>s+(e.omieBiscoitoKg||0),0).toFixed(1);
+  const omieRech=+flt.reduce((s,e)=>s+(e.omieRecheiosKg||0),0).toFixed(1);
+  const omieCob=+flt.reduce((s,e)=>s+(e.omieCoberturasKg||0),0).toFixed(1);
+
+  // ── Métricas para faróis ──
+  // Perda diária média e desvio
+  const dailyLosses={};datas.forEach(dt=>{
+    let v=0,sb=0,bp=0,kg=0;
+    flt.filter(e=>e.data===dt).forEach(e=>{v+=(e.perdaVarreduraKg||((e.perdaVarrDosKg||0)+(e.perdaVarrCobKg||0)+(e.perdaVarrBiscKg||0)));bp+=(e.perdaBoppKg||0);if(e.embalagens&&e.embalagens.length)e.embalagens.forEach(x=>{kg+=(x.real||0)*(x.gram||0)/1000;});else{const sp=e.skusProd&&e.skusProd.length?e.skusProd:[{real:e.realUnid,gram:e.skuGram}];sp.forEach(s=>{kg+=(s.real||0)*(s.gram||0)/1000;});}});
+    lines.forEach(ln=>{sb+=sobrepesoData(dt,ln);});
+    dailyLosses[dt]={total:+(v+sb+bp).toFixed(2),pct:kg>0?+(((v+sb+bp)/kg)*100).toFixed(2):0,kg:+kg.toFixed(1)};
+  });
+  const dailyVals=Object.values(dailyLosses).map(d=>d.total);
+  const avgDaily=dailyVals.length?dailyVals.reduce((a,b)=>a+b,0)/dailyVals.length:0;
+  const maxDaily=dailyVals.length?Math.max(...dailyVals):0;
+  const lastDate=datas[datas.length-1];
+  const lastDayLoss=lastDate?dailyLosses[lastDate].total:0;
+  const lastDayPct=lastDate?dailyLosses[lastDate].pct:0;
+
+  // ── Faróis de alerta ──
+  const farois=[];
+  // % perda total vs threshold (3% bom, 5% atencao, >5% critico)
+  if(perdaPct>=5)farois.push({s:'critico',i:'🔴',t:'% Perda Total Crítica',v:perdaPct+'%',m:'Perda total acima de 5% da produção. Investigar urgente.'});
+  else if(perdaPct>=3)farois.push({s:'atencao',i:'🟡',t:'% Perda Total Alta',v:perdaPct+'%',m:'Perda entre 3-5% da produção. Atenção redobrada.'});
+  else if(perdaPct>0)farois.push({s:'ok',i:'🟢',t:'% Perda Total OK',v:perdaPct+'%',m:'Perda dentro do esperado (<3%).'});
+
+  // Sobrepeso percentual
+  if(sobrPct>=2)farois.push({s:'critico',i:'⚖️',t:'Sobrepeso Crítico',v:sobrPct+'%',m:'Sobrepeso > 2% da produção. Ajustar dosagem imediatamente.'});
+  else if(sobrPct>=1)farois.push({s:'atencao',i:'⚖️',t:'Sobrepeso Alto',v:sobrPct+'%',m:'Sobrepeso entre 1-2%. Revisar parametrização das dosadoras.'});
+
+  // BOPP
+  if(boppPct>=0.5)farois.push({s:'atencao',i:'📦',t:'Perda BOPP',v:boppPct+'%',m:'Perda de embalagem acima de 0.5%. Verificar selagem e regulagens.'});
+
+  // Último dia vs média
+  if(dailyVals.length>=3&&lastDayLoss>avgDaily*1.5){farois.push({s:'critico',i:'📈',t:'Pico Recente',v:lastDayLoss.toFixed(1)+' kg',m:'Último dia acima de 1.5× a média do período ('+avgDaily.toFixed(1)+'kg). Ação imediata recomendada.'});}
+
+  // OMIE diff
+  const omieAbs=Math.abs(omieBisc)+Math.abs(omieRech)+Math.abs(omieCob);
+  if(omieAbs>20)farois.push({s:'critico',i:'📊',t:'Diferenças OMIE Altas',v:omieAbs.toFixed(1)+' kg',m:'Soma dos gaps OMIE > 20kg. Revisar inventários e contagens.'});
+  else if(omieAbs>10)farois.push({s:'atencao',i:'📊',t:'Diferenças OMIE',v:omieAbs.toFixed(1)+' kg',m:'Gaps OMIE entre 10-20kg. Acompanhar tendência.'});
+
+  // Quebra fornecedor concentrada
+  if(quebraPct>=0.5)farois.push({s:'atencao',i:'🏭',t:'Quebra Fornecedor',v:quebraPct+'%',m:'Quebra de biscoito do fornecedor acima de 0.5%. Tratar com fornecedor.'});
+
+  // Sem perda registrada num dia recente — pode indicar subapontamento
+  const dataAtras=new Date();dataAtras.setDate(dataAtras.getDate()-2);
+  const dataAtrasStr=dataAtras.toISOString().slice(0,10);
+  if(period!=='hoje'&&datas.length>=3){
+    const semPerda=datas.filter(d=>d>=dataAtrasStr&&dailyLosses[d].total===0);
+    if(semPerda.length>0)farois.push({s:'atencao',i:'❓',t:'Possível Subapontamento',v:semPerda.length+' dias',m:'Há dias recentes com zero perdas registradas. Verificar se houve apontamento.'});
+  }
+
+  if(!farois.length)farois.push({s:'ok',i:'✅',t:'Tudo Sob Controle',v:'OK',m:'Nenhum indicador anormal detectado no período.'});
+
+  let h='';
+
+  // ── Hero card
+  h+='<div class="big-card"><div class="big-lbl">PERDA TOTAL — '+(period==='custom'?cut+'→'+ref:period.toUpperCase())+(fLine!=='ALL'?' · '+fLine:'')+(fTurno!=='ALL'?' · '+fTurno:'')+'</div>';
+  h+='<div class="big-val">'+perdaTotal+' kg</div>';
+  h+='<div class="big-pct">'+perdaPct+'% da produção</div>';
+  h+='<div class="big-sub">'+totalKgProd.toLocaleString('pt-BR')+' kg produzidos · '+totalAlfEmb.toLocaleString('pt-BR')+' alfajores embalados · '+datas.length+' dias</div>';
+  h+='<div class="big-grid">';
+  h+='<div class="big-item"><div class="big-item-v">'+totalVarr+' kg</div><div class="big-item-pct">'+varrPct+'%</div><div class="big-item-l">Varredura</div></div>';
+  h+='<div class="big-item"><div class="big-item-v">'+totalSobr+' kg</div><div class="big-item-pct">'+sobrPct+'%</div><div class="big-item-l">Sobrepeso</div></div>';
+  h+='<div class="big-item"><div class="big-item-v">'+totalBopp+' kg</div><div class="big-item-pct">'+boppPct+'%</div><div class="big-item-l">BOPP</div></div>';
+  h+='<div class="big-item"><div class="big-item-v">'+totalQuebraFornec+' kg</div><div class="big-item-pct">'+quebraPct+'%</div><div class="big-item-l">Quebra Forn.</div></div>';
+  h+='<div class="big-item"><div class="big-item-v">'+totalRejeito+' kg</div><div class="big-item-pct">'+rejeitoPct+'%</div><div class="big-item-l">Rejeito Dos.</div></div>';
+  h+='</div></div>';
+
+  // ── Faróis de alerta
+  h+='<div class="section-card"><div class="chart-title">🚦 Faróis de Alerta</div>';
+  h+='<p style="font-size:10px;color:var(--muted);font-family:\'DM Mono\';margin-top:4px;margin-bottom:10px">Indicadores chave fora da faixa esperada para o período selecionado.</p>';
+  h+='<div class="farois-grid">';
+  farois.forEach(f=>{
+    h+='<div class="farol '+f.s+'"><div class="farol-hdr"><span class="farol-icon">'+f.i+'</span><span class="farol-title">'+f.t+'</span></div>';
+    h+='<div class="farol-val">'+f.v+'</div><div class="farol-msg">'+f.m+'</div></div>';
+  });
+  h+='</div></div>';
+
+  // ── Top dias com mais perdas
+  const dailySorted=Object.entries(dailyLosses).sort((a,b)=>b[1].total-a[1].total).slice(0,5);
+  if(dailySorted.length){
+    const maxV=dailySorted[0][1].total||1;
+    h+='<div class="section-card"><div class="chart-title">📅 Top 5 Dias com Mais Perdas</div>';
+    dailySorted.forEach((row,i)=>{
+      const dt=new Date(row[0]+'T12:00').toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short'});
+      h+='<div class="top-row"><div class="top-rank r'+(i+1)+'">'+(i+1)+'</div>';
+      h+='<div class="top-info" style="min-width:130px">'+dt+'</div>';
+      h+='<div class="top-bar"><div class="top-bar-fill" style="width:'+((row[1].total/maxV)*100).toFixed(0)+'%"></div></div>';
+      h+='<div class="top-val">'+row[1].total.toFixed(1)+' kg</div>';
+      h+='<div style="font-size:10px;color:var(--muted);font-family:\'DM Mono\';min-width:50px;text-align:right">'+row[1].pct+'%</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+
+  // ── Top SKUs com mais sobrepeso (precisa pesagens)
+  const skuLossMap={};
+  datas.forEach(dt=>{lines.forEach(ln=>{const m=sobrepesoPorSkuLinha(dt,ln);Object.values(m).forEach(s=>{if(s.kg<=0)return;if(!skuLossMap[s.sku])skuLossMap[s.sku]={sku:s.sku,desc:s.desc,kg:0,maxOver:0};skuLossMap[s.sku].kg+=s.kg;if(s.overPct>skuLossMap[s.sku].maxOver)skuLossMap[s.sku].maxOver=s.overPct;});});});
+  const skuLossArr=Object.values(skuLossMap).filter(s=>s.kg>0).sort((a,b)=>b.kg-a.kg).slice(0,5);
+  if(skuLossArr.length){
+    const maxV=skuLossArr[0].kg||1;
+    h+='<div class="section-card"><div class="chart-title">📦 Top 5 SKUs com Mais Sobrepeso</div>';
+    h+='<p style="font-size:10px;color:var(--muted);font-family:\'DM Mono\';margin-bottom:10px">Calculado a partir das pesagens. Mostra qual SKU está consumindo mais matéria-prima do que o nominal.</p>';
+    skuLossArr.forEach((s,i)=>{
+      h+='<div class="top-row"><div class="top-rank r'+(i+1)+'">'+(i+1)+'</div>';
+      h+='<div class="top-info" style="min-width:160px">'+s.sku+' <span style="font-weight:400;color:var(--muted)">· '+s.desc.slice(0,30)+'</span></div>';
+      h+='<div class="top-bar"><div class="top-bar-fill" style="width:'+((s.kg/maxV)*100).toFixed(0)+'%"></div></div>';
+      h+='<div class="top-val">'+s.kg.toFixed(2)+' kg</div>';
+      h+='<div style="font-size:10px;color:var(--purple);font-family:\'DM Mono\';min-width:50px;text-align:right">+'+s.maxOver+'%</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+
+  // ── Top componentes de perda (varr_dos, varr_cob, varr_bisc, sobr, bopp, quebra, rej)
+  const compMap=[
+    {l:'Sobrepeso',v:totalSobr,pct:sobrPct},
+    {l:'Varredura Dosado',v:totalVarrDos,pct:totalKgProd>0?+((totalVarrDos/totalKgProd)*100).toFixed(2):0},
+    {l:'Varredura Coberto',v:totalVarrCob,pct:totalKgProd>0?+((totalVarrCob/totalKgProd)*100).toFixed(2):0},
+    {l:'Varredura Biscoito',v:totalVarrBisc,pct:totalKgProd>0?+((totalVarrBisc/totalKgProd)*100).toFixed(2):0},
+    {l:'BOPP',v:totalBopp,pct:boppPct},
+    {l:'Quebra Fornecedor',v:totalQuebraFornec,pct:quebraPct},
+    {l:'Rejeito Dosado',v:totalRejeito,pct:rejeitoPct}
+  ].filter(c=>c.v>0).sort((a,b)=>b.v-a.v);
+  if(compMap.length){
+    const maxV=compMap[0].v||1;
+    h+='<div class="section-card"><div class="chart-title">🔝 Componentes de Perda — Ranking</div>';
+    compMap.forEach((c,i)=>{
+      h+='<div class="top-row"><div class="top-rank r'+(i+1)+'">'+(i+1)+'</div>';
+      h+='<div class="top-info" style="min-width:160px">'+c.l+'</div>';
+      h+='<div class="top-bar"><div class="top-bar-fill" style="width:'+((c.v/maxV)*100).toFixed(0)+'%"></div></div>';
+      h+='<div class="top-val">'+c.v.toFixed(1)+' kg</div>';
+      h+='<div style="font-size:10px;color:var(--muted);font-family:\'DM Mono\';min-width:50px;text-align:right">'+c.pct+'%</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+
+  // ── Sobrepeso × Sobredosagem
+  if(fLine!=='ALL'){
+    h+='<div class="section-card"><div class="chart-title">⚖️ Sobrepeso × Sobredosagem · '+fLine+'</div>';
+    h+='<p style="font-size:10px;color:var(--muted);font-family:\'DM Mono\';margin-top:4px">Sobrepeso = peso acima do nominal nas pesagens FINAL do período. Sobredosagem = peso acima do nominal das pesagens da DOSAGEM do dia anterior (referente aos alfajores cobertos hoje).</p>';
+    h+='<div class="weight-grid">';
+    h+='<div class="weight-card sobre"><div class="weight-card-title">Sobrepeso · embalagem</div><div class="weight-card-val" style="color:#7C3AED">'+totalSobr+' kg</div><div class="weight-card-sub">Pesagens FINAL no período</div></div>';
+    h+='<div class="weight-card dose"><div class="weight-card-title">Sobredosagem · processo</div><div class="weight-card-val" style="color:#EA580C">'+totalSobreDose+' kg</div><div class="weight-card-sub">Pesagens da dosagem (D-1 referenciado)</div></div>';
+    h+='</div>';
+    const dif=+(totalSobr-totalSobreDose).toFixed(2);
+    h+='<div style="margin-top:10px;padding:10px;background:var(--lg);border-radius:10px;font-size:11px;font-family:\'DM Mono\'"><strong>Δ:</strong> '+(dif>0?'+':'')+dif+' kg · ';
+    if(Math.abs(dif)<0.5)h+='Dosagem e embalagem coerentes.';
+    else if(dif>0)h+='Embalagem mais pesada que a dosagem indicava — possível ganho de massa entre etapas (cobertura excessiva).';
+    else h+='Dosagem mais pesada que a embalagem mostra — possível perda entre etapas.';
+    h+='</div></div>';
+  }else{
+    h+='<div class="section-card" style="background:#FEF9C3;border-color:#FCD34D"><div class="chart-title" style="color:#92400E">⚖️ Sobrepeso × Sobredosagem</div><p style="font-size:11px;color:#92400E;font-family:\'DM Mono\';margin-top:6px">Selecione uma linha específica para ver o detalhamento dosagem (D-1) × embalagem (D).</p></div>';
+  }
+
+  // ── OMIE
+  const hasOmie=Math.abs(omieBisc)+Math.abs(omieRech)+Math.abs(omieCob)>0;
+  if(hasOmie){
+    h+='<div class="section-card"><div class="chart-title">📊 OMIE — Diferenças de Inventário Acumuladas</div>';
+    h+='<p style="font-size:10px;color:var(--muted);font-family:\'DM Mono\';margin-top:4px">Diferença = físico − sistema. Negativo = faltou no físico (perda real). % calculado sobre os kg produzidos.</p>';
+    [['Biscoito',omieBisc,'biscoito'],['Recheios',omieRech,'recheios'],['Coberturas',omieCob,'coberturas']].forEach(([lbl,val,key])=>{
+      const pctV=totalKgProd>0?+((Math.abs(val)/totalKgProd)*100).toFixed(2):0;
+      const valCol=val<0?'var(--red)':val>0?'var(--green)':'var(--muted)';
+      h+='<div class="omie-comp-card"><div class="omie-comp-hdr"><span class="omie-comp-name">'+lbl+'</span></div>';
+      h+='<div class="omie-row3">';
+      h+='<div class="omie-stat"><div class="omie-stat-v" style="color:'+valCol+'">'+(val>0?'+':'')+val+' kg</div><div class="omie-stat-l">Valor absoluto</div></div>';
+      h+='<div class="omie-stat"><div class="omie-stat-v" style="color:'+valCol+'">'+pctV+'%</div><div class="omie-stat-l">% da produção</div></div>';
+      h+='<div class="omie-stat"><div class="omie-stat-v">📈</div><div class="omie-stat-l">Tendência ↓</div></div>';
+      h+='</div>';
+      h+='<canvas id="omie-trend-'+key+'" style="max-height:160px;margin-top:8px"></canvas>';
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+
+  // ── Tendência geral
+  h+='<div class="section-card"><div class="chart-title">📉 Tendência de Perdas no Período</div>';
+  h+='<canvas id="trend-loss" style="max-height:280px"></canvas></div>';
+
+  h+='<div class="section-card"><div class="chart-title">📊 % Perda sobre Produção (diário)</div>';
+  h+='<canvas id="trend-pct" style="max-height:240px"></canvas></div>';
+
+  if(fLine==='ALL'){
+    h+='<div class="section-card"><div class="chart-title">🏭 Perdas por Linha</div>';
+    h+='<canvas id="by-line" style="max-height:240px"></canvas></div>';
+  }
+
+  if(datas.length){
+    h+='<div class="section-card"><div class="chart-title">💬 Comentários sobre Perdas no Período</div>';
+    const comentarios=flt.filter(e=>e.comentarioPerdas).slice(0,15);
+    if(comentarios.length){comentarios.forEach(e=>{h+='<div style="padding:8px 10px;border-left:2px solid var(--yellow);background:var(--lg);border-radius:6px;font-size:11px;margin-bottom:6px">📅 <strong>'+new Date(e.data+'T12:00').toLocaleDateString('pt-BR')+'</strong> · '+e.linha+' · '+e.turno+' · '+e.supervisor+'<div style="margin-top:4px;color:var(--muted);font-style:italic">"'+e.comentarioPerdas+'"</div></div>';});}
+    else h+='<p style="font-size:11px;color:var(--muted);font-family:\'DM Mono\';font-style:italic">Sem comentários no período</p>';
+    h+='</div>';
+  }
+
+  document.getElementById('body').innerHTML=h;
+
+  // Charts
+  Object.values(charts).forEach(c=>{try{c.destroy()}catch(e){}});charts={};
+  const cf={family:'DM Mono',size:8};
+  const lblTrend=datas.map(d=>new Date(d+'T12:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short'}));
+
+  // Trend de perdas
+  const grouped={};datas.forEach(dt=>{
+    let v=0,sb=0,bp=0;
+    flt.filter(e=>e.data===dt).forEach(e=>{v+=(e.perdaVarreduraKg||((e.perdaVarrDosKg||0)+(e.perdaVarrCobKg||0)+(e.perdaVarrBiscKg||0)));bp+=(e.perdaBoppKg||0);});
+    lines.forEach(ln=>{sb+=sobrepesoData(dt,ln);});
+    grouped[dt]={varr:+v.toFixed(1),sobr:+sb.toFixed(1),bopp:+bp.toFixed(1)};
+  });
+  const cTrend=document.getElementById('trend-loss');
+  if(cTrend){
+    charts.trend=new Chart(cTrend,{type:'bar',data:{labels:lblTrend,datasets:[
+      {label:'Varredura',data:datas.map(d=>grouped[d].varr),backgroundColor:'#F59E0BAA',borderRadius:2},
+      {label:'Sobrepeso',data:datas.map(d=>grouped[d].sobr),backgroundColor:'#7C3AEDAA',borderRadius:2},
+      {label:'BOPP',data:datas.map(d=>grouped[d].bopp),backgroundColor:'#14B8A6AA',borderRadius:2}
+    ]},options:{plugins:{legend:{labels:{font:cf}}},scales:{x:{stacked:true,ticks:{font:cf}},y:{stacked:true,ticks:{font:cf}}},maintainAspectRatio:true}});
+  }
+
+  // % Perda diário
+  const cPct=document.getElementById('trend-pct');
+  if(cPct){
+    const pctSeries=datas.map(d=>dailyLosses[d].pct||0);
+    charts.pct=new Chart(cPct,{type:'line',data:{labels:lblTrend,datasets:[{label:'% Perda/Produção',data:pctSeries,borderColor:'#DC2626',backgroundColor:'#DC262633',borderWidth:2,fill:true,tension:0.3,pointRadius:3},{type:'line',label:'Limite Atenção (3%)',data:Array(pctSeries.length).fill(3),borderColor:'#F59E0B',borderWidth:1.5,borderDash:[5,3],pointRadius:0,fill:false},{type:'line',label:'Limite Crítico (5%)',data:Array(pctSeries.length).fill(5),borderColor:'#DC2626',borderWidth:1.5,borderDash:[5,3],pointRadius:0,fill:false}]},options:{plugins:{legend:{labels:{font:cf}}},scales:{x:{ticks:{font:cf}},y:{ticks:{font:cf}}},maintainAspectRatio:true}});
+  }
+
+  // Por linha
+  if(fLine==='ALL'){
+    const cBL=document.getElementById('by-line');
+    const byLn={L1:{varr:0,sobr:0,bopp:0,quebra:0,rej:0},L2:{varr:0,sobr:0,bopp:0,quebra:0,rej:0},L3:{varr:0,sobr:0,bopp:0,quebra:0,rej:0}};
+    flt.forEach(e=>{const ln=e.linha;if(!byLn[ln])return;byLn[ln].varr+=(e.perdaVarreduraKg||((e.perdaVarrDosKg||0)+(e.perdaVarrCobKg||0)+(e.perdaVarrBiscKg||0)));byLn[ln].bopp+=(e.perdaBoppKg||0);byLn[ln].quebra+=(e.perdaQuebraFornecKg||0);byLn[ln].rej+=(e.perdaRejeitoDosKg||0);});
+    datas.forEach(dt=>{['L1','L2','L3'].forEach(ln=>{byLn[ln].sobr+=sobrepesoData(dt,ln);});});
+    if(cBL){
+      charts.byLine=new Chart(cBL,{type:'bar',data:{labels:['L1','L2','L3'],datasets:[
+        {label:'Varredura',data:['L1','L2','L3'].map(l=>+byLn[l].varr.toFixed(1)),backgroundColor:'#F59E0BAA'},
+        {label:'Sobrepeso',data:['L1','L2','L3'].map(l=>+byLn[l].sobr.toFixed(1)),backgroundColor:'#7C3AEDAA'},
+        {label:'Quebra Fornec.',data:['L1','L2','L3'].map(l=>+byLn[l].quebra.toFixed(1)),backgroundColor:'#DC2626AA'},
+        {label:'Rejeito Dos.',data:['L1','L2','L3'].map(l=>+byLn[l].rej.toFixed(1)),backgroundColor:'#7C3AEDAA'},
+        {label:'BOPP',data:['L1','L2','L3'].map(l=>+byLn[l].bopp.toFixed(1)),backgroundColor:'#14B8A6AA'}
+      ]},options:{plugins:{legend:{labels:{font:cf}}},scales:{x:{stacked:true,ticks:{font:cf}},y:{stacked:true,ticks:{font:cf}}},maintainAspectRatio:true}});
+    }
+  }
+
+  // OMIE trends
+  if(hasOmie){
+    [['biscoito','omieBiscoitoKg','#F59E0B'],['recheios','omieRecheiosKg','#7C3AED'],['coberturas','omieCoberturasKg','#14B8A6']].forEach(([k,key,col])=>{
+      const cv=document.getElementById('omie-trend-'+k);if(!cv)return;
+      const dailyV=datas.map(dt=>{const dEs=flt.filter(e=>e.data===dt);return +dEs.reduce((s,e)=>s+(e[key]||0),0).toFixed(1);});
+      charts['omie_'+k]=new Chart(cv,{type:'line',data:{labels:lblTrend,datasets:[{label:k,data:dailyV,borderColor:col,backgroundColor:col+'22',borderWidth:2,fill:true,tension:0.3,pointRadius:2}]},options:{plugins:{legend:{display:false}},scales:{x:{ticks:{font:cf}},y:{ticks:{font:cf}}},maintainAspectRatio:true}});
+    });
+  }
+}
+
+renderNav('perdas');loadAll();
+</script>
+</body>
+</html>
