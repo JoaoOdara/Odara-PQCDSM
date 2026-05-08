@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Odara · Diário da Qualidade</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500;700&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="shared.css"/>
+<style>
+.q-group{margin-bottom:18px}
+.q-group-title{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Mono';margin:14px 0 8px;padding-bottom:6px;border-bottom:2px solid var(--yellow)}
+.q-item{display:flex;align-items:flex-start;gap:8px;padding:12px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;flex-wrap:wrap;background:var(--white)}
+.q-num{width:24px;height:24px;border-radius:50%;background:var(--lg);color:var(--ink);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:11px;font-family:'DM Mono';flex-shrink:0}
+.q-txt{flex:1;font-size:12px;min-width:200px;line-height:1.4}
+.q-status{display:flex;gap:3px}
+.q-btn{width:32px;height:32px;border:1.5px solid var(--border);border-radius:6px;background:var(--white);cursor:pointer;font-size:13px;font-weight:700;color:var(--muted);transition:.15s}
+.q-btn.c{background:#DCFCE7;border-color:#86EFAC;color:var(--green)}
+.q-btn.dl{background:#FEF9C3;border-color:#FCD34D;color:#92400E}
+.q-btn.dg{background:#FEE2E2;border-color:#FCA5A5;color:var(--red)}
+.q-btn.na{background:var(--lg);border-color:var(--border);color:var(--muted)}
+.q-comment{flex:1 0 100%;margin-top:6px}
+.step-hdr{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.step-num{width:24px;height:24px;border-radius:50%;background:var(--yellow);color:var(--black);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:12px;font-family:'DM Mono';flex-shrink:0}
+.tipo-tab{display:inline-flex;gap:4px;background:var(--lg);border-radius:8px;padding:3px;width:100%}
+.tipo-btn{flex:1;padding:9px;border:none;border-radius:6px;font-size:11px;font-family:'DM Mono';font-weight:600;cursor:pointer;background:transparent;color:var(--muted);transition:.2s}
+.tipo-btn.active{background:var(--white);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.summary-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.summary-pill{font-size:10px;font-family:'DM Mono';padding:4px 10px;border-radius:12px;font-weight:600}
+.summary-pill.ok{background:#DCFCE7;color:var(--green)}
+.summary-pill.warn{background:#FEF9C3;color:#92400E}
+.summary-pill.err{background:#FEE2E2;color:var(--red)}
+.summary-pill.na{background:var(--lg);color:var(--muted)}
+.hist-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;font-size:11px}
+.hist-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-family:'DM Mono'}
+.hist-info{display:flex;gap:8px;flex-wrap:wrap}
+.hist-tag{font-size:9px;padding:2px 8px;border-radius:8px;background:var(--lg);color:var(--muted)}
+.status-card{padding:14px;border-radius:12px;margin-bottom:10px;border:2px solid;cursor:pointer;text-align:center;font-family:'DM Mono';font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;transition:.15s}
+.status-card:hover{transform:translateY(-2px)}
+.status-options{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.status-card.ok{background:#DCFCE7;border-color:#86EFAC;color:var(--green)}
+.status-card.atencao{background:#FEF9C3;border-color:#FCD34D;color:#92400E}
+.status-card.critico{background:#FEE2E2;border-color:#FCA5A5;color:var(--red)}
+.status-card:not(.active){opacity:.45}
+.status-card.active{opacity:1;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+@media(max-width:600px){.status-options{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="hdr"><div class="logo"><div class="logo-bar"></div><div><span class="logo-title">ODARA</span><span class="logo-tag">DIÁRIO DA QUALIDADE</span></div></div></div>
+<div class="nav-bar" id="main-nav"></div>
+
+<div class="content">
+  <div id="form-saved" style="display:none;background:#DCFCE7;border:1px solid #86EFAC;border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--green);font-weight:700;text-align:center">✅ Diário salvo!</div>
+  <div id="form-err" style="display:none;background:#FEE2E2;border:1px solid #FCA5A5;border-radius:10px;padding:12px;margin-bottom:12px;font-size:12px;color:var(--red);font-weight:700"></div>
+
+  <div class="form-section">
+    <div class="step-hdr"><div class="step-num">1</div><span class="fsec-title">DATA, LINHA, TURNO E MONITORA</span></div>
+    <div class="fg">
+      <div><label class="fl">Data</label><input id="f-data" class="fi" type="date"/></div>
+      <div><label class="fl">Linha</label>
+        <div class="tipo-tab" style="margin-top:3px">
+          <button class="tipo-btn" id="btn-l-L1" onclick="setLinha('L1')">Linha 1</button>
+          <button class="tipo-btn" id="btn-l-L2" onclick="setLinha('L2')">Linha 2</button>
+          <button class="tipo-btn" id="btn-l-L3" onclick="setLinha('L3')">Linha 3</button>
+        </div>
+      </div>
+      <div><label class="fl">Turno</label>
+        <div class="tipo-tab" style="margin-top:3px">
+          <button class="tipo-btn active" id="btn-t-T1" onclick="setTurno('T1')">T1</button>
+          <button class="tipo-btn" id="btn-t-T2" onclick="setTurno('T2')">T2</button>
+          <button class="tipo-btn" id="btn-t-T3" onclick="setTurno('T3')">T3</button>
+        </div>
+      </div>
+      <div><label class="fl">Monitora de Qualidade</label><input id="f-monitor" class="fi" type="text" placeholder="Nome"/></div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="step-hdr"><div class="step-num">2</div><span class="fsec-title">CHECKLIST DA QUALIDADE</span></div>
+    <p style="font-size:10px;color:var(--muted);font-family:'DM Mono';margin-bottom:10px">C = Conforme · DL = Desvio leve · DG = Desvio grave · NA = Não aplicável. Use o campo de comentário para detalhes em qualquer item.</p>
+    <div class="summary-bar" id="sbar"></div>
+    <div id="q-list"></div>
+  </div>
+
+  <div class="form-section">
+    <div class="step-hdr"><div class="step-num">3</div><span class="fsec-title">COMENTÁRIO GERAL DO TURNO</span></div>
+    <p style="font-size:10px;color:var(--muted);font-family:'DM Mono';margin-bottom:10px">Como foi o andamento do turno do ponto de vista da qualidade? Pontos positivos, oportunidades de melhoria, observações relevantes.</p>
+    <textarea id="f-com-geral" class="fi" placeholder="Descreva como foi o turno..." rows="4"></textarea>
+  </div>
+
+  <div class="form-section">
+    <div class="step-hdr"><div class="step-num">4</div><span class="fsec-title">NÃO CONFORMIDADES NO PRODUTO</span></div>
+    <p style="font-size:10px;color:var(--muted);font-family:'DM Mono';margin-bottom:10px">Houve não conformidades observadas no produto durante o turno? Descreva tipo, quantidade, lote afetado e ação tomada.</p>
+    <textarea id="f-ncs-prod" class="fi" placeholder="Ex: 12 alfajores com mancha de chocolate no lote da manhã, separados para retrabalho..." rows="4"></textarea>
+  </div>
+
+  <div class="form-section">
+    <div class="step-hdr"><div class="step-num">5</div><span class="fsec-title">STATUS GERAL DO DIA</span></div>
+    <p style="font-size:10px;color:var(--muted);font-family:'DM Mono';margin-bottom:10px">Avaliação resumida do turno do ponto de vista da qualidade.</p>
+    <div class="status-options">
+      <div class="status-card ok" id="st-ok" onclick="setStatus('ok')">✓ Bom andamento</div>
+      <div class="status-card atencao" id="st-atencao" onclick="setStatus('atencao')">! Requer atenção</div>
+      <div class="status-card critico" id="st-critico" onclick="setStatus('critico')">✕ Crítico</div>
+    </div>
+  </div>
+
+  <button class="save-btn" id="save-btn" onclick="saveEntry()">💾 Salvar Diário</button>
+
+  <div class="form-section" style="margin-top:20px">
+    <div class="step-hdr"><div class="step-num">📜</div><span class="fsec-title">ÚLTIMOS LANÇAMENTOS</span></div>
+    <div id="hist-list">Carregando…</div>
+  </div>
+</div>
+
+<div class="footer"><span>ODARA · PQCDSM v12 · Qualidade</span><span></span></div>
+<div class="toast" id="toast"></div>
+
+<script src="shared.js"></script>
+<script>
+if(!checkAuth())throw new Error('not auth');
+
+let fLinha=null,fTurno='T1',fStatus='';
+let respostas={},comentarios={};
+
+function setLinha(l){fLinha=l;['L1','L2','L3'].forEach(x=>document.getElementById('btn-l-'+x).classList.toggle('active',x===l));}
+function setTurno(t){fTurno=t;['T1','T2','T3'].forEach(x=>document.getElementById('btn-t-'+x).classList.toggle('active',x===t));}
+function setStatus(s){fStatus=s;['ok','atencao','critico'].forEach(x=>document.getElementById('st-'+x).classList.toggle('active',x===s));}
+
+function renderQuestions(){
+  let h='',lastGroup='';
+  QUALIDADE_QUESTOES.forEach((q,i)=>{
+    if(q.grupo!==lastGroup){
+      if(lastGroup)h+='</div>';
+      h+='<div class="q-group"><div class="q-group-title">'+q.grupo+'</div>';
+      lastGroup=q.grupo;
+    }
+    const v=respostas[i]||'',com=comentarios[i]||'';
+    h+='<div class="q-item"><div class="q-num">'+(i+1)+'</div><span class="q-txt">'+q.q+'</span>';
+    h+='<div class="q-status">'+['c','dl','dg','na'].map(s=>'<button class="q-btn '+(v===s?s:'')+'" onclick="setResp('+i+',\''+s+'\')">'+(s==='c'?'✓':s==='dl'?'!':s==='dg'?'✕':'—')+'</button>').join('')+'</div>';
+    h+='<div class="q-comment"><input class="fi" style="font-size:11px;padding:6px 10px" type="text" placeholder="Comentário (opcional)..." value="'+com.replace(/"/g,'&quot;')+'" onchange="comentarios['+i+']=this.value"/></div>';
+    h+='</div>';
+  });
+  if(lastGroup)h+='</div>';
+  document.getElementById('q-list').innerHTML=h;
+  renderSummary();
+}
+
+function setResp(i,s){respostas[i]=respostas[i]===s?'':s;renderQuestions();}
+
+function renderSummary(){
+  let c=0,dl=0,dg=0,na=0,tot=QUALIDADE_QUESTOES.length;
+  Object.values(respostas).forEach(v=>{if(v==='c')c++;else if(v==='dl')dl++;else if(v==='dg')dg++;else if(v==='na')na++;});
+  const pendentes=tot-(c+dl+dg+na);
+  let h='';
+  h+='<span class="summary-pill ok">✓ '+c+' conforme</span>';
+  if(dl>0)h+='<span class="summary-pill warn">! '+dl+' desvio leve</span>';
+  if(dg>0)h+='<span class="summary-pill err">✕ '+dg+' desvio grave</span>';
+  if(na>0)h+='<span class="summary-pill na">— '+na+' N/A</span>';
+  if(pendentes>0)h+='<span class="summary-pill na">○ '+pendentes+' pendente</span>';
+  document.getElementById('sbar').innerHTML=h;
+}
+
+async function saveEntry(){
+  const monitor=document.getElementById('f-monitor').value.trim();
+  if(!monitor){showToast('⚠️ Informe a monitora','err');return;}
+  if(!fLinha){showToast('⚠️ Selecione a linha','err');return;}
+  if(!fStatus){showToast('⚠️ Defina o status do dia','err');return;}
+
+  const btn=document.getElementById('save-btn');btn.disabled=true;btn.textContent='⏳ Salvando…';
+  const payload={
+    data:document.getElementById('f-data').value,
+    linha:fLinha,turno:fTurno,monitor,
+    respostas,comentarios,
+    comentario_geral:document.getElementById('f-com-geral').value||'',
+    ncs_produto:document.getElementById('f-ncs-prod').value||'',
+    status_dia:fStatus
+  };
+  try{
+    await sbInsert('qualidade_diario',payload);
+    showToast('✅ Salvo!','ok');clearForm();loadHistory();
+  }catch(e){
+    document.getElementById('form-err').style.display='block';
+    document.getElementById('form-err').textContent='❌ '+e.message;
+  }
+  btn.disabled=false;btn.textContent='💾 Salvar Diário';
+}
+
+function clearForm(){
+  document.getElementById('f-monitor').value='';
+  document.getElementById('f-com-geral').value='';
+  document.getElementById('f-ncs-prod').value='';
+  respostas={};comentarios={};fStatus='';
+  ['ok','atencao','critico'].forEach(x=>document.getElementById('st-'+x).classList.remove('active'));
+  renderQuestions();
+  document.getElementById('form-saved').style.display='block';
+  setTimeout(()=>document.getElementById('form-saved').style.display='none',3000);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+async function loadHistory(){
+  try{
+    const rows=await sbQuery('qualidade_diario','select=*&order=data.desc,created_at.desc&limit=15');
+    if(!rows.length){document.getElementById('hist-list').innerHTML='<p style="font-size:11px;color:var(--muted);font-family:\'DM Mono\';font-style:italic">Nenhum lançamento ainda.</p>';return;}
+    let h='';
+    rows.forEach(r=>{
+      const resps=r.respostas||{};
+      let c=0,dl=0,dg=0;
+      Object.values(resps).forEach(v=>{if(v==='c')c++;else if(v==='dl')dl++;else if(v==='dg')dg++;});
+      const stCol=r.status_dia==='ok'?'#DCFCE7;color:var(--green)':r.status_dia==='atencao'?'#FEF9C3;color:#92400E':r.status_dia==='critico'?'#FEE2E2;color:var(--red)':'var(--lg);color:var(--muted)';
+      const stLbl=r.status_dia==='ok'?'✓ BOM':r.status_dia==='atencao'?'! ATENÇÃO':r.status_dia==='critico'?'✕ CRÍTICO':'—';
+      h+='<div class="hist-card"><div class="hist-hdr">';
+      h+='<div class="hist-info"><strong>'+new Date(r.data+'T12:00').toLocaleDateString('pt-BR')+'</strong>';
+      h+='<span class="hist-tag">'+r.linha+'</span><span class="hist-tag">'+r.turno+'</span>';
+      h+='<span class="hist-tag">'+r.monitor+'</span></div>';
+      h+='<span class="hist-tag" style="background:'+stCol+';font-weight:700">'+stLbl+'</span></div>';
+      h+='<div style="font-size:10px;font-family:\'DM Mono\';color:var(--muted);margin-bottom:4px">';
+      h+='✓ '+c+' · ! '+dl+' · ✕ '+dg+' desvios';
+      h+='</div>';
+      if(r.comentario_geral)h+='<div style="margin-top:4px;color:var(--muted);font-style:italic;font-size:10px"><strong>Geral:</strong> '+(r.comentario_geral.length>140?r.comentario_geral.slice(0,140)+'…':r.comentario_geral)+'</div>';
+      if(r.ncs_produto)h+='<div style="margin-top:4px;color:var(--red);font-style:italic;font-size:10px"><strong>NCs:</strong> '+(r.ncs_produto.length>140?r.ncs_produto.slice(0,140)+'…':r.ncs_produto)+'</div>';
+      h+='</div>';
+    });
+    document.getElementById('hist-list').innerHTML=h;
+  }catch(e){document.getElementById('hist-list').innerHTML='<p style="color:var(--red);font-size:11px">Erro ao carregar histórico</p>';}
+}
+
+document.getElementById('f-data').value=today();
+renderQuestions();renderNav('qualidade');loadHistory();
+</script>
+</body>
+</html>
