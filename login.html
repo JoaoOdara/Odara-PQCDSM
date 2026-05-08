@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Odara · Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500;700&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--yellow:#FFB81D;--red:#EE2737;--black:#0C0C0C;--cream:#FFF8EA;--white:#FFFFFF;--ink:#0C0C0C;--muted:#6B7280;--border:#E5E5E0;--lg:#F5F5F0;--green:#15803D}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(135deg,#0C0C0C 0%,#1E293B 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;color:var(--ink)}
+.login-card{background:var(--white);border-radius:24px;padding:36px 30px;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.4);position:relative;overflow:hidden}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--yellow),var(--red))}
+.brand{text-align:center;margin-bottom:24px}
+.brand-title{font-family:'Bebas Neue';font-size:42px;letter-spacing:6px;line-height:1;color:var(--ink)}
+.brand-sub{font-family:'DM Mono';font-size:9px;letter-spacing:3px;color:var(--muted);margin-top:4px;text-transform:uppercase}
+.brand-tag{font-family:'DM Mono';font-size:8px;letter-spacing:2px;color:var(--yellow);margin-top:10px;background:var(--ink);display:inline-block;padding:4px 12px;border-radius:8px;font-weight:700}
+.fl{display:block;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Mono';margin-bottom:6px}
+.fi{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans';font-size:14px;font-weight:500;background:var(--white);transition:.15s}
+.fi:focus{outline:none;border-color:var(--yellow);box-shadow:0 0 0 3px rgba(255,184,29,.15)}
+.field{margin-bottom:16px}
+.btn-login{width:100%;background:var(--ink);color:var(--yellow);border:none;border-radius:12px;padding:14px;font-family:'DM Mono';font-size:12px;font-weight:700;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:.15s;margin-top:4px}
+.btn-login:hover{background:var(--red);color:var(--white)}
+.btn-login:disabled{opacity:.5;cursor:not-allowed}
+.err{background:#FEE2E2;border:1px solid #FCA5A5;border-radius:10px;padding:10px;font-size:11px;color:var(--red);font-weight:600;margin-bottom:14px;display:none}
+.foot{text-align:center;margin-top:18px;font-size:9px;color:var(--muted);font-family:'DM Mono';letter-spacing:1px}
+</style>
+</head>
+<body>
+<div class="login-card">
+  <div class="brand">
+    <div class="brand-title">ODARA</div>
+    <div class="brand-sub">PQCDSM · GESTÃO INDUSTRIAL</div>
+    <div class="brand-tag">ACESSO RESTRITO</div>
+  </div>
+  <div class="err" id="err"></div>
+  <div class="field">
+    <label class="fl" for="u">Usuário</label>
+    <input id="u" class="fi" type="text" autocomplete="username" placeholder="usuário"/>
+  </div>
+  <div class="field">
+    <label class="fl" for="p">Senha</label>
+    <input id="p" class="fi" type="password" autocomplete="current-password" placeholder="senha"/>
+  </div>
+  <button class="btn-login" id="btn" onclick="doLoginAction()">Entrar →</button>
+  <div class="foot">ODARA ALFAJORES · v12</div>
+</div>
+<script src="shared.js"></script>
+<script>
+// Já está logado? redireciona
+if(localStorage.getItem('odara_auth')){
+  try{const o=JSON.parse(localStorage.getItem('odara_auth'));if(o.exp&&Date.now()<o.exp)window.location.href='index.html';}catch(e){}
+}
+
+function doLoginAction(){
+  const u=document.getElementById('u').value.trim();
+  const p=document.getElementById('p').value;
+  const err=document.getElementById('err');
+  if(!u||!p){err.textContent='⚠️ Preencha usuário e senha';err.style.display='block';return;}
+  if(doLogin(u,p)){
+    err.style.display='none';
+    document.getElementById('btn').textContent='✓ Entrando…';
+    document.getElementById('btn').disabled=true;
+    setTimeout(()=>window.location.href='index.html',300);
+  }else{
+    err.textContent='❌ Usuário ou senha incorretos';err.style.display='block';
+    document.getElementById('p').value='';document.getElementById('p').focus();
+  }
+}
+// Enter envia
+['u','p'].forEach(id=>document.getElementById(id).addEventListener('keypress',e=>{if(e.key==='Enter')doLoginAction();}));
+document.getElementById('u').focus();
+</script>
+</body>
+</html>
